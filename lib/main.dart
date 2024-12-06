@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/login_page.dart';
+import 'package:my_medicine_box/presentation/pages/profile.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:my_medicine_box/presentation/pages/splash_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => HomePage(),
           '/login': (context) => const LoginPage(),
           "/register": (context) => const RegisterPage(),
+          "/profile": (context) => Profile(),
         });
   }
 }
