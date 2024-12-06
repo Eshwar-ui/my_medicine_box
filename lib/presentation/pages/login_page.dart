@@ -1,9 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:google_sign_in/google_sign_in.dart';
+//import 'package:my_medicine_box/firebase_options.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class ShowPasswordField extends StatefulWidget {
@@ -36,10 +37,11 @@ class _ShowPasswordFieldState extends State<ShowPasswordField> {
         suffixIcon: IconButton(
           icon: Icon(
             _isObscured ? Icons.visibility_off : Icons.visibility,
+            color: Theme.of(context).colorScheme.inversePrimary,
           ),
           onPressed: _togglePasswordVisibility,
         ),
-        fillColor: Colors.white70,
+        fillColor: Theme.of(context).colorScheme.primary,
         filled: true,
       ),
     );
@@ -54,21 +56,31 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  Future<void> loginUser() async {
-    // Add your authentication logic here
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('isLoggedIn', true); // Set login status to true
+  signinwithgoogle() async {
+    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? gAuth = await gUser!.authentication;
+    final credential = GoogleAuthProvider.credential(
+        //accessToken: gAuth.accessToken,
+        //idToken: gAuth.idToken,
+        );
 
-    // ignore: use_build_context_synchronously
-    Navigator.of(context)
-        .pushReplacementNamed('/home'); // Navigate to home page
+    //return await .signInWithCredential(credential);
+  }
+
+  void Login() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text,
+      password: passwordController.text,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xffD9CDB6),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: Column(
@@ -77,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
               SvgPicture.asset("lib/presentation/assets/logos/app_logo.svg"),
 
               //email text feild
-              const DecoratedBox(
+              DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
@@ -87,9 +99,12 @@ class _LoginPageState extends State<LoginPage> {
                     border: OutlineInputBorder(
                         borderSide: BorderSide.none,
                         borderRadius: BorderRadius.all(Radius.circular(10))),
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: Icon(
+                      Icons.person,
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                    ),
                     hintText: "email",
-                    fillColor: Colors.white70,
+                    fillColor: Theme.of(context).colorScheme.primary,
                     filled: true,
                   ),
                 ),
@@ -97,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
 
               //gap
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               //password text feild
               const DecoratedBox(
@@ -106,72 +121,49 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: ShowPasswordField()),
 
-              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    height: 40,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "forgot password?",
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
 
               SizedBox(
                 width: 500,
                 height: 50,
                 child: ElevatedButton(
                     style: ButtonStyle(
-                        backgroundColor:
-                            const WidgetStatePropertyAll(Color(0xff1D3557)),
-                        foregroundColor:
-                            const WidgetStatePropertyAll(Colors.white),
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.tertiary),
+                        foregroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.primary),
                         textStyle: const WidgetStatePropertyAll(TextStyle(
                             fontSize: 25, fontWeight: FontWeight.bold)),
                         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
-                      );
-                    },
+                    onPressed: Login,
                     child: const Text(
                       "login",
                     )),
               ),
 
-              const SizedBox(
-                height: 20,
-              ),
-
-              SizedBox(
-                width: 500,
-                height: 50,
-                child: ElevatedButton.icon(
-                  icon: Icon(MdiIcons.google),
-                  style: ButtonStyle(
-                      backgroundColor:
-                          const WidgetStatePropertyAll(Colors.white),
-                      elevation: const WidgetStatePropertyAll(10),
-                      foregroundColor:
-                          const WidgetStatePropertyAll(Colors.black),
-                      textStyle: const WidgetStatePropertyAll(
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.w300)),
-                      shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)))),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                  },
-                  label: const Text("sign in with google"),
-                ),
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text("don't have account ",
+                  Text("Don't have account?",
                       style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
+                          fontSize: 17,
+                          color: Theme.of(context).colorScheme.inversePrimary,
                           fontWeight: FontWeight.w400)),
-                  const SizedBox(
-                    width: 2,
-                  ),
                   TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(
@@ -180,13 +172,46 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) => const RegisterPage()),
                         );
                       },
-                      child: const Text("Register now",
+                      child: Text("Register now",
                           style: TextStyle(
                               fontSize: 18,
-                              color: Colors.black,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
                               fontWeight: FontWeight.w600)))
                 ],
-              )
+              ),
+
+              Divider(
+                color: Colors.grey,
+                thickness: 1,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                width: 500,
+                height: 50,
+                child: ElevatedButton.icon(
+                  icon: Icon(MdiIcons.google),
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(
+                          Theme.of(context).colorScheme.primary),
+                      elevation: const WidgetStatePropertyAll(10),
+                      foregroundColor: WidgetStatePropertyAll(
+                          Theme.of(context).colorScheme.inversePrimary),
+                      textStyle: const WidgetStatePropertyAll(
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.w300)),
+                      shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)))),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                    );
+                  },
+                  label: const Text("sign in with google"),
+                ),
+              ),
             ],
           ),
         ));

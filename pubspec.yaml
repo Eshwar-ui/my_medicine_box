@@ -45,11 +45,21 @@ dependencies:
   google_mlkit_text_recognition: ^0.14.0
   camera: ^0.11.0+2
   flutter_expandable_fab: ^2.3.0
+  firebase_core: ^3.8.0
+  firebase_auth: ^5.3.3
+  weekly_calendar: ^0.1.2
   
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.14.1"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "lib/presentation/assets/logos/app_logo.svg"
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

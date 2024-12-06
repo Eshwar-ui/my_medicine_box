@@ -43,6 +43,10 @@ class _DetailPageState extends State<DetailPage> {
         }
       }
     }
+
+    setState(() {
+      results = recognizedText.text;
+    });
   }
 
   @override
@@ -53,7 +57,20 @@ class _DetailPageState extends State<DetailPage> {
         child: Container(
           padding: const EdgeInsets.all(30),
           child: Column(
-            children: [Image.file(widget.image), Card(child: Text(results))],
+            children: [
+              Image.file(
+                fit: BoxFit.cover,
+                widget.image,
+              ),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(results),
+                ),
+                elevation: 10,
+                color: Theme.of(context).colorScheme.primary,
+              )
+            ],
           ),
         ),
       )),

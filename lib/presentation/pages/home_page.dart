@@ -1,13 +1,17 @@
 // ignore_for_file: unused_field
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_medicine_box/presentation/components/Fab.dart';
 import 'package:my_medicine_box/presentation/components/bottom_nav.dart';
+import 'package:my_medicine_box/presentation/components/calender.dart';
 import 'package:my_medicine_box/presentation/pages/profile.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+
+  final user = FirebaseAuth.instance.currentUser;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -16,7 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ImagePicker picker = ImagePicker();
   final List<Widget> _pages = [
-    const HomePage(),
+    HomePage(),
     const Profile(),
   ];
 
@@ -26,23 +30,26 @@ class _HomePageState extends State<HomePage> {
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
+              stretch: true,
               backgroundColor: const Color(0xffD9CDB6),
-              expandedHeight: 300,
+              expandedHeight: 260,
               floating: true,
+              pinned: true,
               flexibleSpace: FlexibleSpaceBar(
                   background: SafeArea(
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 40),
+                      const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: EdgeInsets.only(right: 10.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
                           children: [
+                            IconButton(
+                                onPressed: Drawer.new, icon: Icon(Icons.menu)),
                             Text(
                               "My Medicine box",
                               style: TextStyle(
@@ -76,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Center(
                         child: SizedBox(
-                          height: 120,
+                          height: 130,
                           width: 120,
                           child: Image.asset(
                               fit: BoxFit.cover,
@@ -87,6 +94,33 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               )),
+            ),
+            SliverToBoxAdapter(
+              child: Container(
+                decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusDirectional.only(
+                            topStart: Radius.circular(50),
+                            topEnd: Radius.circular(50)))),
+                height: 500,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      // calender widget
+                      mycalender(),
+
+                      // table widget
+                      DataTable(columns: [
+                        DataColumn(label: Text("data"))
+                      ], rows: [
+                        DataRow(cells: [DataCell(Text("hi"))])
+                      ]),
+                    ],
+                  ),
+                ),
+              ),
             )
           ],
         ),

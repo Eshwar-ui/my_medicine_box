@@ -12,7 +12,12 @@
           "package_name": "com.example.my_medicine_box"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "576559200435-09p9jpg2l47ji5sifnar8ahd3ifls4qv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDYTyVp2U1xHJGpHzyhww2KasHIll77WXs"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576559200435-09p9jpg2l47ji5sifnar8ahd3ifls4qv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "576559200435-vjdsl7v2jm7pgqb1n9tg9m6pn1gr2fsb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myMedicineBox"
+              }
+            }
+          ]
         }
       }
     }

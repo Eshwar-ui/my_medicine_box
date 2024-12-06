@@ -3,15 +3,20 @@ import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/login_page.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:my_medicine_box/presentation/pages/splash_screen.dart';
-import 'package:my_medicine_box/presentation/theme/theme_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:my_medicine_box/presentation/theme/dark_theme.dart';
+import 'package:my_medicine_box/presentation/theme/light_theme.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => ThemeProvider(),
-    child: const MyApp(),
-  ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
+    MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -21,12 +26,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-            textTheme:
-                GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)),
+        theme: lightmode,
         home: const SplashScreen(),
         routes: {
-          '/home': (context) => const HomePage(),
+          '/home': (context) => HomePage(),
           '/login': (context) => const LoginPage(),
           "/register": (context) => const RegisterPage(),
         });

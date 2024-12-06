@@ -22,6 +22,7 @@ class _FabState extends State<Fab> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      autofocus: true,
       backgroundColor: Colors.white,
       shape: const CircleBorder(
         side: BorderSide(
@@ -30,7 +31,7 @@ class _FabState extends State<Fab> {
             strokeAlign: BorderSide.strokeAlignOutside),
       ),
       onPressed: () async {
-        XFile? xfile = await imagePicker.pickImage(source: ImageSource.gallery);
+        XFile? xfile = await imagePicker.pickImage(source: ImageSource.camera);
 
         if (xfile != null) {
           File image = File(xfile.path);
@@ -39,8 +40,9 @@ class _FabState extends State<Fab> {
           }));
         }
       },
-      child: const Icon(
+      child: Icon(
         Icons.camera_alt,
+        color: Theme.of(context).colorScheme.tertiary,
         size: 29,
       ),
     );

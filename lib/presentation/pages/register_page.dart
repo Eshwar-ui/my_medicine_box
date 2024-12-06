@@ -109,8 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomePage()),
+                        MaterialPageRoute(builder: (context) => HomePage()),
                       );
                     },
                     child: const Text(
@@ -140,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      MaterialPageRoute(builder: (context) => HomePage()),
                     );
                   },
                   label: const Text("sign in with google"),
@@ -149,14 +148,11 @@ class _RegisterPageState extends State<RegisterPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text("Already User ",
+                  Text("Already User?",
                       style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
+                          fontSize: 18,
+                          color: Theme.of(context).colorScheme.inversePrimary,
                           fontWeight: FontWeight.w400)),
-                  const SizedBox(
-                    width: 2,
-                  ),
                   TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(
@@ -165,10 +161,11 @@ class _RegisterPageState extends State<RegisterPage> {
                               builder: (context) => const LoginPage()),
                         );
                       },
-                      child: const Text("login now",
+                      child: Text("login now",
                           style: TextStyle(
                               fontSize: 18,
-                              color: Colors.black,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
                               fontWeight: FontWeight.w600)))
                 ],
               )
