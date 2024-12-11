@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "576559200435-djid0jno81hj0ujh23ntk6fha5l5csq8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.my_medicine_box",
+            "certificate_hash": "9a7ce6bd709bde40990bd94d5baa9e2208959074"
+          }
+        },
+        {
           "client_id": "576559200435-09p9jpg2l47ji5sifnar8ahd3ifls4qv.apps.googleusercontent.com",
           "client_type": 3
         }

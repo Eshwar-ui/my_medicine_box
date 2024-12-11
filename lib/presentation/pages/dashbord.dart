@@ -32,17 +32,6 @@ class _DashbordState extends State<Dashbord> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (ctx) {
-                              return Profile();
-                            }));
-                          },
-                          child: Icon(
-                            (Icons.menu),
-                          ),
-                        ),
                         const Text(
                           "My Medicine box",
                           style: TextStyle(

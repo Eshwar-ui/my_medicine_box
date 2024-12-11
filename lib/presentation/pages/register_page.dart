@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/login_page.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:google_sign_in/google_sign_in.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -14,17 +14,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  //Future<void> loginUser() async {
-  // Add your authentication logic here
-
-  //final prefs = await SharedPreferences.getInstance();
-  // prefs.setBool('isLoggedIn', true); // Set login status to true
-
-  // ignore: use_build_context_synchronously
-  // Navigator.of(context)
-  //   .pushReplacementNamed('/home'); // Navigate to home page
-  //}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
