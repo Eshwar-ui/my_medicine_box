@@ -4,7 +4,6 @@ import 'package:my_medicine_box/presentation/pages/login_page.dart';
 import 'package:my_medicine_box/presentation/pages/profile.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:my_medicine_box/presentation/pages/splash_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:my_medicine_box/presentation/theme/dark_theme.dart';
 import 'package:my_medicine_box/presentation/theme/light_theme.dart';
@@ -28,6 +27,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: lightmode,
+        darkTheme: darkmode,
+        themeMode: ThemeMode.system,
         home: const SplashScreen(),
         routes: {
           '/home': (context) => HomePage(),

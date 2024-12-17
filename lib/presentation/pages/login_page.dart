@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_medicine_box/authentication/auth_services.dart';
+import 'package:my_medicine_box/presentation/components/app_assets.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -41,6 +42,9 @@ class _ShowPasswordFieldState extends State<ShowPasswordField> {
         fillColor: Theme.of(context).colorScheme.primary,
         filled: true,
       ),
+      style: TextStyle(
+        color: Theme.of(context).colorScheme.inversePrimary,
+      ),
     );
   }
 }
@@ -55,6 +59,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    final appAssets = Theme.of(context).extension<AppAssets>();
+    final logoPath =
+        appAssets?.logo ?? 'lib/presentation/assets/logos/app_logo_light.svg';
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SingleChildScrollView(
@@ -63,7 +70,9 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SvgPicture.asset("lib/presentation/assets/logos/app_logo.svg"),
+                SvgPicture.asset(
+                  logoPath,
+                ),
 
                 //email text feild
                 DecoratedBox(
@@ -85,6 +94,9 @@ class _LoginPageState extends State<LoginPage> {
                       fillColor: Theme.of(context).colorScheme.primary,
                       filled: true,
                     ),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                    ),
                   ),
                 ),
                 //gap
@@ -105,7 +117,10 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {},
                         child: Text(
                           "forgot password?",
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          style: TextStyle(
+                              fontSize: 16,
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary),
                         ),
                       ),
                     ),
@@ -118,9 +133,8 @@ class _LoginPageState extends State<LoginPage> {
                   child: ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll(
-                              Theme.of(context).colorScheme.tertiary),
-                          foregroundColor: WidgetStatePropertyAll(
-                              Theme.of(context).colorScheme.primary),
+                              Theme.of(context).colorScheme.secondary),
+                          foregroundColor: WidgetStatePropertyAll(Colors.white),
                           textStyle: const WidgetStatePropertyAll(TextStyle(
                               fontSize: 25, fontWeight: FontWeight.bold)),
                           shape: WidgetStatePropertyAll(RoundedRectangleBorder(

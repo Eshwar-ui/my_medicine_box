@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:my_medicine_box/presentation/components/app_assets.dart';
 
 ThemeData lightmode = ThemeData(
+  extensions: <ThemeExtension>[
+    AppAssets(logo: 'lib/presentation/assets/logos/app_logo_light.svg'),
+  ],
+  textTheme: GoogleFonts.poppinsTextTheme(),
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
     surface: Color(0xffD9CDB6),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_medicine_box/presentation/components/calender.dart';
-import 'package:my_medicine_box/presentation/pages/profile.dart';
 
 class Dashbord extends StatefulWidget {
   const Dashbord({super.key});
@@ -16,7 +15,7 @@ class _DashbordState extends State<Dashbord> {
       slivers: [
         SliverAppBar(
           stretch: true,
-          backgroundColor: const Color(0xffD9CDB6),
+          backgroundColor: Colors.transparent,
           expandedHeight: 260,
           floating: false,
           pinned: true,
@@ -32,10 +31,13 @@ class _DashbordState extends State<Dashbord> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "My Medicine box",
                           style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.bold),
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
                         ),
                         const Icon(
                           Icons.notifications_none,
@@ -47,10 +49,10 @@ class _DashbordState extends State<Dashbord> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const TextField(
+                  TextField(
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.only(left: 29),
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.primary,
                         filled: true,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -79,7 +81,7 @@ class _DashbordState extends State<Dashbord> {
         SliverToBoxAdapter(
           child: Container(
             decoration: ShapeDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.only(
                         topStart: Radius.circular(50),
@@ -94,9 +96,22 @@ class _DashbordState extends State<Dashbord> {
 
                   // table widget
                   DataTable(columns: [
-                    DataColumn(label: Text("data"))
+                    DataColumn(
+                        label: Text(
+                      "data",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                    ))
                   ], rows: [
-                    DataRow(cells: [DataCell(Text("hi"))])
+                    DataRow(cells: [
+                      DataCell(Text(
+                        "hi",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
+                      ))
+                    ])
                   ]),
                 ],
               ),
