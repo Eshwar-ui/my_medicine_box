@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_medicine_box/authentication/auth_services.dart';
 import 'package:my_medicine_box/presentation/components/app_assets.dart';
+import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -57,6 +59,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final appAssets = Theme.of(context).extension<AppAssets>();
@@ -139,7 +144,22 @@ class _LoginPageState extends State<LoginPage> {
                               fontSize: 25, fontWeight: FontWeight.bold)),
                           shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)))),
-                      onPressed: () => AuthServices().Login(),
+                      onPressed: () async {
+                        final authServices = AuthServices();
+
+                        await authServices.Login(
+                          context,
+                          emailController,
+                          passwordController,
+                        );
+
+                        if (FirebaseAuth.instance.currentUser != null) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomePage()),
+                          );
+                        }
+                      },
                       child: const Text(
                         "login",
                       )),
@@ -194,7 +214,18 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 25, fontWeight: FontWeight.w300)),
                         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
-                    onPressed: () => AuthServices().signinwithgoogle(),
+                    onPressed: () async {
+                      final authServices = AuthServices();
+
+                      await authServices.signinwithgoogle(context);
+
+                      if (FirebaseAuth.instance.currentUser != null) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                        );
+                      }
+                    },
                     label: const Text("sign in with google"),
                   ),
                 ),

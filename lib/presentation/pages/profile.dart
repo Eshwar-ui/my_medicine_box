@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:my_medicine_box/authentication/auth_services.dart';
 import 'package:my_medicine_box/presentation/components/profile_buttons.dart';
+import 'package:my_medicine_box/presentation/pages/login_page.dart';
 
 class Profile extends StatelessWidget {
   Profile({super.key});
@@ -43,8 +44,10 @@ class Profile extends StatelessWidget {
                     ),
                     Text(
                       user.displayName ?? user.email ?? "No Name",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.inversePrimary),
                     )
                   ],
                 ),
@@ -52,7 +55,7 @@ class Profile extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(50),
                     topRight: Radius.circular(50),
@@ -78,7 +81,17 @@ class Profile extends StatelessWidget {
                       icon: Icons.settings_outlined),
                   myButton(
                       text: "logout",
-                      onTap: () => AuthServices().Logout(),
+                      onTap: () async {
+                        final authServices = AuthServices();
+
+                        await authServices.Logout(context);
+
+                        // Navigate to the Login Page after Sign-Out
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      },
                       icon: Icons.logout_rounded),
                 ],
               ),

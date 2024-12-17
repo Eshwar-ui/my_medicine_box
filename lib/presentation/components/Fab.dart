@@ -23,7 +23,7 @@ class _FabState extends State<Fab> {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       autofocus: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       shape: const CircleBorder(
         side: BorderSide(
             color: Color(0xff1D3557),
@@ -42,7 +42,7 @@ class _FabState extends State<Fab> {
       },
       child: Icon(
         Icons.camera_alt,
-        color: Theme.of(context).colorScheme.tertiary,
+        color: Theme.of(context).colorScheme.inversePrimary,
         size: 29,
       ),
     );

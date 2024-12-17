@@ -13,6 +13,7 @@ class _DashbordState extends State<Dashbord> {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
+        // header
         SliverAppBar(
           stretch: true,
           backgroundColor: Colors.transparent,
@@ -27,7 +28,7 @@ class _DashbordState extends State<Dashbord> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
+                    padding: const EdgeInsets.only(right: 10.0, left: 5.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -70,7 +71,7 @@ class _DashbordState extends State<Dashbord> {
                       width: 120,
                       child: Image.asset(
                           fit: BoxFit.cover,
-                          'lib/presentation/assets/images/bg image.png'),
+                          'lib/presentation/assets/images/bg_image.png'),
                     ),
                   )
                 ],
