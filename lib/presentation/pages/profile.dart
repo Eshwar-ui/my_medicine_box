@@ -1,10 +1,12 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 import 'package:my_medicine_box/presentation/components/profile_buttons.dart';
 import 'package:my_medicine_box/presentation/pages/login_page.dart';
 
 class Profile extends StatelessWidget {
-  Profile({super.key});
+  const Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class Profile extends StatelessWidget {
                     left: 40, right: 30, top: 30, bottom: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: const [
                     SizedBox(
                       height: 40,
                     ),

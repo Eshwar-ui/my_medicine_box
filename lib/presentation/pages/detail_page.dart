@@ -63,6 +63,8 @@ class _DetailPageState extends State<DetailPage> {
                 widget.image,
               ),
               Card(
+                elevation: 10,
+                color: Theme.of(context).colorScheme.primary,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Text(
@@ -71,8 +73,6 @@ class _DetailPageState extends State<DetailPage> {
                         color: Theme.of(context).colorScheme.inversePrimary),
                   ),
                 ),
-                elevation: 10,
-                color: Theme.of(context).colorScheme.primary,
               )
             ],
           ),
