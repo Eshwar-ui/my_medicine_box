@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_medicine_box/presentation/components/calender.dart';
 
 class Dashbord extends StatefulWidget {
@@ -19,18 +20,18 @@ class _DashbordState extends State<Dashbord> {
         SliverAppBar(
           stretch: true,
           backgroundColor: Colors.transparent,
-          expandedHeight: 260,
+          expandedHeight: 205.h,
           floating: false,
           pinned: true,
           flexibleSpace: FlexibleSpaceBar(
               background: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 10.0, left: 5.0),
+                    padding: EdgeInsets.only(right: 10.0.sp, left: 5.0.sp),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -39,7 +40,7 @@ class _DashbordState extends State<Dashbord> {
                           style: TextStyle(
                               color:
                                   Theme.of(context).colorScheme.inversePrimary,
-                              fontSize: 30,
+                              fontSize: 28.sp,
                               fontWeight: FontWeight.bold),
                         ),
                         const Icon(
@@ -49,12 +50,14 @@ class _DashbordState extends State<Dashbord> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
+                  SizedBox(
+                    height: 10.h,
                   ),
                   TextField(
+                    showCursor: false,
+                    cursorColor: Theme.of(context).colorScheme.inversePrimary,
                     decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(left: 29),
+                        contentPadding: EdgeInsets.only(left: 29.sp),
                         fillColor: Theme.of(context).colorScheme.primary,
                         filled: true,
                         border: OutlineInputBorder(
@@ -69,8 +72,8 @@ class _DashbordState extends State<Dashbord> {
                   ),
                   Center(
                     child: SizedBox(
-                      height: 130,
-                      width: 120,
+                      height: 105.h,
+                      width: 90.w,
                       child: Image.asset(
                           fit: BoxFit.cover,
                           'lib/presentation/assets/images/bg_image.png'),
@@ -89,9 +92,9 @@ class _DashbordState extends State<Dashbord> {
                     borderRadius: BorderRadiusDirectional.only(
                         topStart: Radius.circular(50),
                         topEnd: Radius.circular(50)))),
-            height: 500,
+            height: 500.h,
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(20.0.sp),
               child: Column(
                 children: [
                   // calender widget

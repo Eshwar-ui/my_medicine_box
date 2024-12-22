@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:my_medicine_box/presentation/components/profile_buttons.dart';
 import 'package:my_medicine_box/presentation/pages/login_page.dart';
@@ -16,16 +17,16 @@ class Profile extends StatelessWidget {
         children: [
           Container(
               color: Colors.transparent,
-              height: 260,
-              width: 500,
+              height: 205.h,
+              width: 500.w,
               child: Padding(
                 padding: const EdgeInsets.only(
                     left: 40, right: 30, top: 30, bottom: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     SizedBox(
-                      height: 40,
+                      height: 40.h,
                     ),
                     // CircleAvatar(
                     //   backgroundImage: user.photoURL != null
@@ -39,7 +40,7 @@ class Profile extends StatelessWidget {
                     //       : null,
                     // ),
                     SizedBox(
-                      height: 20,
+                      height: 20.h,
                     ),
                     // Text(
                     //   user.displayName ?? user.email ?? "No Name",
