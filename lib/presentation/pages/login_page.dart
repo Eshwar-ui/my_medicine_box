@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                           shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)))),
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
                         );
@@ -204,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => HomePage()),
                       );

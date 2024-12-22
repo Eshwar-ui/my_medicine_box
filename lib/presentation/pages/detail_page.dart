@@ -65,7 +65,11 @@ class _DetailPageState extends State<DetailPage> {
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Text(results),
+                  child: Text(
+                    results,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.inversePrimary),
+                  ),
                 ),
                 elevation: 10,
                 color: Theme.of(context).colorScheme.primary,

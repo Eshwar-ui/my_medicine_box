@@ -122,7 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)))),
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
                         );
@@ -178,7 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => HomePage()),
                       );
