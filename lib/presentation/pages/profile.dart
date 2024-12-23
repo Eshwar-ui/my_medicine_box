@@ -17,7 +17,7 @@ class Profile extends StatelessWidget {
         children: [
           Container(
               color: Colors.transparent,
-              height: 205.h,
+              height: 250.h,
               width: 500.w,
               child: Padding(
                 padding: const EdgeInsets.only(

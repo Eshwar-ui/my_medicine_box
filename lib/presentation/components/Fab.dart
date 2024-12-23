@@ -31,7 +31,7 @@ class _FabState extends State<Fab> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         shape: CircleBorder(
           side: BorderSide(
-              color: Color(0xff1D3557),
+              color: const Color(0xff1D3557),
               width: 8.w,
               strokeAlign: BorderSide.strokeAlignOutside),
         ),

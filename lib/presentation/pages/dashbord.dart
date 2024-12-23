@@ -20,13 +20,13 @@ class _DashbordState extends State<Dashbord> {
         SliverAppBar(
           stretch: true,
           backgroundColor: Colors.transparent,
-          expandedHeight: 205.h,
+          expandedHeight: 250.h,
           floating: false,
           pinned: true,
           flexibleSpace: FlexibleSpaceBar(
               background: SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -72,8 +72,8 @@ class _DashbordState extends State<Dashbord> {
                   ),
                   Center(
                     child: SizedBox(
-                      height: 105.h,
-                      width: 90.w,
+                      height: 135.h,
+                      width: 110.w,
                       child: Image.asset(
                           fit: BoxFit.cover,
                           'lib/presentation/assets/images/bg_image.png'),
@@ -92,13 +92,13 @@ class _DashbordState extends State<Dashbord> {
                     borderRadius: BorderRadiusDirectional.only(
                         topStart: Radius.circular(50),
                         topEnd: Radius.circular(50)))),
-            height: 500.h,
+            height: 700.h,
             child: Padding(
               padding: EdgeInsets.all(20.0.sp),
               child: Column(
                 children: [
                   // calender widget
-                  mycalender(),
+                  Mycalender(),
 
                   // table widget
                   DataTable(columns: [

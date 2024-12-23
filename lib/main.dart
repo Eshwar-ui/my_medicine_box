@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(360, 690),
+      designSize: const Size(393, 876),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -29,10 +29,10 @@ class MyApp extends StatelessWidget {
           themeMode: ThemeMode.system,
           home: const SplashScreen(),
           routes: {
-            '/home': (context) => HomePage(),
+            '/home': (context) => const HomePage(),
             '/login': (context) => const LoginPage(),
             '/register': (context) => const RegisterPage(),
-            '/profile': (context) => Profile(),
+            '/profile': (context) => const Profile(),
           },
         );
       },

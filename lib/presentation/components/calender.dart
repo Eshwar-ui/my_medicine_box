@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:weekly_calendar/weekly_calendar.dart';
 
-class mycalender extends StatefulWidget {
-  const mycalender({super.key});
+class Mycalender extends StatefulWidget {
+  const Mycalender({super.key});
 
   @override
-  State<mycalender> createState() => _mycalenderState();
+  State<Mycalender> createState() => _MycalenderState();
 }
 
-class _mycalenderState extends State<mycalender> {
+class _MycalenderState extends State<Mycalender> {
   @override
   Widget build(BuildContext context) {
     return WeeklyCalendar(
       calendarStyle: CalendarStyle(
         locale: "en",
-        padding: EdgeInsets.all(0),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.all(0),
+        decoration: const BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.all(Radius.circular(14)),
         ),

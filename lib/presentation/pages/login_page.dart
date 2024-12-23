@@ -74,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 120.h),
+            padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 150.h),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                 // login
                 SizedBox(
                   width: 500.w,
-                  height: 40.h,
+                  height: 50.h,
                   child: ElevatedButton(
                       style: ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll(
@@ -194,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                 // google sign in
                 SizedBox(
                   width: 500.w,
-                  height: 50.h,
+                  height: 70.h,
                   child: ElevatedButton.icon(
                     icon: Icon(MdiIcons.google),
                     style: ButtonStyle(

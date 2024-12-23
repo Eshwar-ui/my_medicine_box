@@ -30,7 +30,7 @@ class _RegisterPageState extends State<RegisterPage> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 120.h),
+            padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 150.h),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -164,10 +164,19 @@ class _RegisterPageState extends State<RegisterPage> {
                   ],
                 ),
 
+                Divider(
+                  color: Colors.grey,
+                  thickness: 1.sp,
+                ),
+
+                SizedBox(
+                  height: 20.h,
+                ),
+
                 // google sign in
                 SizedBox(
                   width: 500.w,
-                  height: 50.h,
+                  height: 70.h,
                   child: ElevatedButton.icon(
                     icon: Icon(MdiIcons.google),
                     style: ButtonStyle(
