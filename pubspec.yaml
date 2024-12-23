@@ -41,6 +41,8 @@ dependencies:
   weekly_calendar: ^0.1.2
   material_design_icons_flutter: ^7.0.7296
   google_fonts: ^6.2.1
+  http: ^1.2.2
+  flutter_dotenv: ^5.2.1
   flutter_screenutil: ^5.9.3
 
 dev_dependencies:

@@ -4,6 +4,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DetailPage extends StatefulWidget {
   File image;
@@ -24,29 +27,61 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   String results = "";
+
+  // Function to send recognized text to ChatGPT
+  Future<String> organizeData(String rawText) async {
+    final String? apiKey = dotenv.env['OPENAI_API_KEY'];
+    final response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode({
+        'model': 'gpt-4o-mini',
+        'messages': [
+          {
+            "role": "user",
+            "content":
+                'Extract and organize the following data: medicine name, dosage, formula, manufacturing date including  year, and expiry date including year, company name, just give me the data nothing extra from this text: $rawText',
+          }
+        ]
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(response.body);
+      return data['choices'][0]['message']['content'].trim();
+    } else {
+      throw Exception('Failed to process data');
+    }
+  }
+
+  // Perform text recognition
   doTextRecogition() async {
     InputImage inputImage = InputImage.fromFile(this.widget.image);
     final RecognizedText recognizedText =
         await textRecognizer.processImage(inputImage);
 
     results = recognizedText.text;
-    for (TextBlock block in recognizedText.blocks) {
-      final Rect rect = block.boundingBox;
-      final List<Point<int>> cornerPoints = block.cornerPoints;
-      final String text = block.text;
-      final List<String> languages = block.recognizedLanguages;
-
-      for (TextLine line in block.lines) {
-        // Same getters as TextBlock
-        for (TextElement element in line.elements) {
-          // Same getters as TextBlock
-        }
-      }
-    }
-
     setState(() {
       results = recognizedText.text;
     });
+    print(results);
+
+    // Send recognized text to ChatGPT
+    try {
+      String organizedData = await organizeData(results);
+      setState(() {
+        results = organizedData;
+      });
+      print(results);
+    } catch (e) {
+      setState(() {
+        results = 'Error processing data: $e';
+      });
+    }
   }
 
   @override
