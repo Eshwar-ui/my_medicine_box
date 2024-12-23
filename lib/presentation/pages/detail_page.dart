@@ -1,6 +1,5 @@
-// ignore_for_file: unused_local_variable, must_be_immutable, unnecessary_this
+// ignore_for_file: unused_local_variable, must_be_immutable, unnecessary_this, avoid_print
 
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
