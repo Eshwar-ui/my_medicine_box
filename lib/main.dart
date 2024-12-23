@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:my_medicine_box/firebase_options.dart';
 import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/login_page.dart';
 import 'package:my_medicine_box/presentation/pages/profile.dart';
@@ -11,6 +13,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: '.env');
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     const MyApp(),
   );
