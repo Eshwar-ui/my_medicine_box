@@ -73,6 +73,7 @@ flutter:
     - lib/presentation/assets/logos/app_logo_light.svg
     - lib/presentation/assets/images/bg_image.png
     - lib/presentation/assets/logos/app_logo_dark.svg
+    -.env
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
