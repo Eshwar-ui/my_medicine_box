@@ -43,7 +43,7 @@ class _DetailPageState extends State<DetailPage> {
           {
             "role": "user",
             "content":
-                'Extract and organize the following data: medicine name, dosage, formula, manufacturing date including  year, and expiry date including year, company name, just give me the data nothing extra from this text: $rawText',
+                ' do not have any bold words and Extract and organize the following data: medicine name, dosage, formula, manufacturing date including  year, and expiry date including year, company name, just give me the data nothing extra from this text: $rawText',
           }
         ]
       }),

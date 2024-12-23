@@ -12,7 +12,7 @@ import 'package:my_medicine_box/theme/light_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: '.env');
+  await dotenv.load(fileName: ".env");
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
