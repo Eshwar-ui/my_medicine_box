@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "167454263064",
+    "project_id": "my-medicine-box-97fa3",
+    "storage_bucket": "my-medicine-box-97fa3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167454263064:android:ed03a097487e40240a806d",
+        "android_client_info": {
+          "package_name": "com.example.my_medicine_box"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0IZKn3Xl3COTi4qVrAWL3reIVEBhtvs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
