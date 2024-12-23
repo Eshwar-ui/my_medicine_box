@@ -13,10 +13,61 @@ class Fab extends StatefulWidget {
 
 class _FabState extends State<Fab> {
   late ImagePicker imagePicker;
+
   @override
   void initState() {
     super.initState();
     imagePicker = ImagePicker();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    XFile? xfile = await imagePicker.pickImage(source: source);
+
+    if (xfile != null) {
+      File image = File(xfile.path);
+      Navigator.push(context, MaterialPageRoute(builder: (ctx) {
+        return DetailPage(image);
+      }));
+    } else {
+      // Show a message if the user cancels the image selection
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No image selected')),
+      );
+    }
+  }
+
+  void _showImageSourceOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () async {
+                  Navigator.pop(ctx); // Close the modal
+                  await _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text('Gallery'),
+                onTap: () async {
+                  Navigator.pop(ctx); // Close the modal
+                  await _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -30,16 +81,7 @@ class _FabState extends State<Fab> {
             width: 9,
             strokeAlign: BorderSide.strokeAlignOutside),
       ),
-      onPressed: () async {
-        XFile? xfile = await imagePicker.pickImage(source: ImageSource.camera);
-
-        if (xfile != null) {
-          File image = File(xfile.path);
-          Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-            return DetailPage(image);
-          }));
-        }
-      },
+      onPressed: _showImageSourceOptions,
       child: Icon(
         Icons.camera_alt,
         color: Theme.of(context).colorScheme.inversePrimary,
