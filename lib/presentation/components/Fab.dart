@@ -88,15 +88,7 @@ class _FabState extends State<Fab> {
               strokeAlign: BorderSide.strokeAlignOutside),
         ),
         onPressed: () async {
-          XFile? xfile =
-              await imagePicker.pickImage(source: ImageSource.camera);
-
-          if (xfile != null) {
-            File image = File(xfile.path);
-            Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-              return DetailPage(image);
-            }));
-          }
+          return _showImageSourceOptions();
         },
         child: Icon(
           Icons.camera_alt,
