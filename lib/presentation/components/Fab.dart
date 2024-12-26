@@ -40,6 +40,7 @@ class _FabState extends State<Fab> {
 
   void _showImageSourceOptions() {
     showModalBottomSheet(
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -51,7 +52,10 @@ class _FabState extends State<Fab> {
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
+                title: Text(
+                  'Camera',
+                  style: TextStyle(fontSize: 20.sp),
+                ),
                 onTap: () async {
                   Navigator.pop(ctx); // Close the modal
                   await _pickImage(ImageSource.camera);
@@ -59,7 +63,10 @@ class _FabState extends State<Fab> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo),
-                title: const Text('Gallery'),
+                title: Text(
+                  'Gallery',
+                  style: TextStyle(fontSize: 20.sp),
+                ),
                 onTap: () async {
                   Navigator.pop(ctx); // Close the modal
                   await _pickImage(ImageSource.gallery);

@@ -33,17 +33,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: _pages[_selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Fab(),
       bottomNavigationBar: BottomAppBar(
+        height: 90.h,
         color: const Color(0xff1D3557),
         shape: const CircularNotchedRectangle(),
-        notchMargin: 13,
+        notchMargin: 13.sp,
         child: BottomNavigationBar(
           elevation: 0,
-          backgroundColor: const Color.fromARGB(1, 29, 53, 87),
+          backgroundColor: Colors.transparent,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: Padding(
@@ -51,9 +52,10 @@ class _HomePageState extends State<HomePage> {
                   child: Icon(
                     Icons.home_outlined,
                     color: Colors.white,
+                    size: 25.sp,
                   ),
                 ),
-                label: '',
+                label: "",
                 activeIcon: Padding(
                   padding: EdgeInsets.only(right: 50.sp),
                   child: Icon(Icons.home),
@@ -64,9 +66,10 @@ class _HomePageState extends State<HomePage> {
                   child: Icon(
                     Icons.person_outline_rounded,
                     color: Colors.white,
+                    size: 25.sp,
                   ),
                 ),
-                label: '',
+                label: "",
                 activeIcon: Padding(
                   padding: EdgeInsets.only(left: 50.sp),
                   child: Icon(Icons.person),

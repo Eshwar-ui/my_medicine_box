@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "167454263064",
+    "project_id": "my-medicine-box-97fa3",
+    "storage_bucket": "my-medicine-box-97fa3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167454263064:android:ed03a097487e40240a806d",
+        "android_client_info": {
+          "package_name": "com.example.my_medicine_box"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "167454263064-t16uncgt2j2rnnc45gnfmdkstf96io3g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.my_medicine_box",
+            "certificate_hash": "d811d3e6220017a627eb7b9d60ff80be4fcf9c0a"
+          }
+        },
+        {
+          "client_id": "167454263064-qun29m3p3a8fgl0cgj82rs3qsbf8k9qg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0IZKn3Xl3COTi4qVrAWL3reIVEBhtvs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "167454263064-qun29m3p3a8fgl0cgj82rs3qsbf8k9qg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "167454263064-iat2b0utabhvm2lpo1hgtmjavfquv0n3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myMedicineBox"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

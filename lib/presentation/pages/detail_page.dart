@@ -53,7 +53,7 @@ class _DetailPageState extends State<DetailPage> {
           {
             "role": "user",
             "content":
-                'Extract and organize the following data into a valid JSON format: {"medicine_name": "Medicine Name", "dosage": "Dosage", "formula": "Formula", "manufacturing_date": "Manufacturing Date", "expiry_date": "Expiry Date", "company_name": "Company Name"} from this text: $rawText'
+                'Extract and organize the following data into a valid JSON format: {"medicine_name": "Medicine Name", "dosage": "Dosage", "formula": "Formula", "manufacturing_date": "Manufacturing Date", "expiry_date": "Expiry Date", "company_name": "Company Name"} from this text: $rawText , in manufacturing and expiry date if the number is on right side of month consider it as year and nothing on left side just give month and year only'
           }
         ]
       }),
