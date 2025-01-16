@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Fab(),
       bottomNavigationBar: BottomAppBar(
-        height: 90.h,
+        height: 85.h,
         color: const Color(0xff1D3557),
         shape: const CircularNotchedRectangle(),
         notchMargin: 13.sp,
@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.white,
           onTap: _onItemTapped,
-          type: BottomNavigationBarType.fixed,
+          // type: BottomNavigationBarType.fixed,
         ),
       ),
     );

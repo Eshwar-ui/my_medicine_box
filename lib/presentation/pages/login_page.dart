@@ -3,11 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:my_medicine_box/presentation/components/app_assets.dart';
 import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_medicine_box/providers/authentication/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class ShowPasswordField extends StatefulWidget {
   const ShowPasswordField({super.key});
@@ -24,6 +25,11 @@ class _ShowPasswordFieldState extends State<ShowPasswordField> {
     setState(() {
       _isObscured = !_isObscured;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -67,6 +73,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     final appAssets = Theme.of(context).extension<AppAssets>();
     final logoPath =
         appAssets?.logo ?? 'lib/presentation/assets/logos/app_logo_light.svg';
@@ -148,10 +156,11 @@ class _LoginPageState extends State<LoginPage> {
                               fontSize: 25.sp, fontWeight: FontWeight.bold)),
                           shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)))),
-                      onPressed: () {
-                        Navigator.pushReplacement(
+                      onPressed: () async {
+                        await authProvider.login(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
+                          emailController.text,
+                          passwordController.text,
                         );
                       },
                       child: const Text(

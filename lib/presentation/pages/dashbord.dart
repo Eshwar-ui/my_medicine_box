@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_medicine_box/presentation/components/calender.dart';
+import 'package:my_medicine_box/presentation/components/data_table.dart';
 
 class Dashbord extends StatefulWidget {
   const Dashbord({super.key});
@@ -25,6 +26,8 @@ class _DashbordState extends State<Dashbord> {
           pinned: true,
           flexibleSpace: FlexibleSpaceBar(
               background: SafeArea(
+            top: true,
+            bottom: false,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
               child: Column(
@@ -94,31 +97,38 @@ class _DashbordState extends State<Dashbord> {
                         topEnd: Radius.circular(50)))),
             height: 700.h,
             child: Padding(
-              padding: EdgeInsets.all(20.0.sp),
+              padding: EdgeInsets.all(25.0.sp),
               child: Column(
                 children: [
                   // calender widget
                   Mycalender(),
 
-                  // table widget
-                  DataTable(columns: [
-                    DataColumn(
-                        label: Text(
-                      "data",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
-                    ))
-                  ], rows: [
-                    DataRow(cells: [
-                      DataCell(Text(
-                        "hi",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.inversePrimary,
+                  // meds title with edit icon
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0.sp),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "My Meds",
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25),
                         ),
-                      ))
-                    ])
-                  ]),
+                        Icon(
+                          Icons.edit,
+                          size: 25,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15.sp,
+                  ),
+                  // table widget
+                  MyTable(),
                 ],
               ),
             ),

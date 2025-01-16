@@ -7,9 +7,14 @@ import 'package:my_medicine_box/presentation/pages/login_page.dart';
 import 'package:my_medicine_box/presentation/pages/profile.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:my_medicine_box/presentation/pages/splash_screen.dart';
+import 'package:my_medicine_box/providers/authentication/auth_provider.dart';
+import 'package:my_medicine_box/providers/data%20providers/detailpage_provider.dart';
+import 'package:my_medicine_box/providers/medicinedata_provider.dart';
+import 'package:my_medicine_box/providers/theme_provider.dart';
 import 'package:my_medicine_box/theme/dark_theme.dart';
 import 'package:my_medicine_box/theme/light_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -31,18 +36,30 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: lightmode,
-          darkTheme: darkmode,
-          themeMode: ThemeMode.system,
-          home: const SplashScreen(),
-          routes: {
-            '/home': (context) => const HomePage(),
-            '/login': (context) => const LoginPage(),
-            '/register': (context) => const RegisterPage(),
-            '/profile': (context) => const Profile(),
-          },
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => MedicineProvider()),
+            ChangeNotifierProvider(create: (_) => AuthProvider()),
+            ChangeNotifierProvider(create: (_) => ThemeProvider()),
+            ChangeNotifierProvider(create: (_) => DetailPageProvider())
+          ],
+          child: Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: lightmode,
+                darkTheme: darkmode,
+                themeMode: themeProvider.themeMode,
+                home: const SplashScreen(),
+                routes: {
+                  '/login': (context) => const LoginPage(),
+                  '/register': (context) => const RegisterPage(),
+                  '/home': (context) => const HomePage(),
+                  '/profile': (context) => const Profile(),
+                },
+              );
+            },
+          ),
         );
       },
     );

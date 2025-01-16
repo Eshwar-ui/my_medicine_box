@@ -46,9 +46,12 @@ dependencies:
   firebase_core: ^3.9.0
   flutter_screenutil: ^5.9.3
   firebase_auth: ^5.3.4
-  cloud_firestore: ^5.6.0
+  cloud_firestore: ^5.6.1
   google_ml_kit: ^0.19.0
   image: ^4.5.2
+  provider: ^6.1.2
+  google_sign_in: ^6.2.2
+  shared_preferences: ^2.3.5
 
 dev_dependencies:
   flutter_test:
