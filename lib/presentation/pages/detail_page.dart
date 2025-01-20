@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/providers/data%20providers/detailpage_provider.dart';
-import 'package:my_medicine_box/providers/medicinedata_provider.dart';
 import 'package:provider/provider.dart';
 
 class DetailPage extends StatefulWidget {
@@ -47,13 +46,24 @@ class _DetailPageState extends State<DetailPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
+                      height: 500.h,
                       decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: FileImage(
+                            widget.image,
+                          ),
+                          fit: BoxFit.cover,
+                        ),
+                        border: Border.all(
+                          width: 2,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      child: Image.file(
-                        widget.image,
-                        fit: BoxFit.contain,
-                      ),
+                      // child: Image.file(
+                      //   widget.image,
+                      //   fit: BoxFit.contain,
+                      // ),
                     ),
                     GestureDetector(
                       onTap: () => _showDetailsModal(context, provider),
@@ -156,15 +166,6 @@ class DetailModal extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      Provider.of<MedicineProvider>(context, listen: false)
-                          .addMedicine({
-                        'medicine_name': provider.medicineName,
-                        'company_name': provider.companyName,
-                        'formula': provider.formula,
-                        'manufacturing_date': provider.manufacturingDate,
-                        'expiry_date': provider.expiryDate,
-                      });
-
                       // Fetch the userId from FirebaseAuth
                       final userId = FirebaseAuth.instance.currentUser?.uid;
 
@@ -212,6 +213,7 @@ class DetailModal extends StatelessWidget {
                         border:
                             Border.all(width: 2, color: provider.messageColor)),
                     child: Text(
+                      textAlign: TextAlign.center,
                       provider.message,
                       style: TextStyle(
                         color: provider.messageColor,
@@ -250,6 +252,7 @@ class DetailModal extends StatelessWidget {
               color: Theme.of(context).colorScheme.inversePrimary,
             ),
           ),
+          SizedBox(width: 10.w),
           Flexible(
             child: Text(
               value,

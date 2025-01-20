@@ -8,13 +8,14 @@ import 'package:my_medicine_box/presentation/pages/profile.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:my_medicine_box/presentation/pages/splash_screen.dart';
 import 'package:my_medicine_box/providers/authentication/auth_provider.dart';
-import 'package:my_medicine_box/providers/data%20providers/detailpage_provider.dart';
 import 'package:my_medicine_box/providers/medicinedata_provider.dart';
 import 'package:my_medicine_box/providers/theme_provider.dart';
 import 'package:my_medicine_box/theme/dark_theme.dart';
 import 'package:my_medicine_box/theme/light_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+
+import 'providers/data providers/detailpage_provider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");

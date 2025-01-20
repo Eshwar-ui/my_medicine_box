@@ -6,6 +6,7 @@ import 'package:my_medicine_box/presentation/components/profile_buttons.dart';
 import 'package:my_medicine_box/presentation/pages/theme_selectingpage.dart';
 // ignore: library_prefixes
 import 'package:my_medicine_box/providers/authentication/auth_provider.dart'
+    // ignore: library_prefixes
     as myBoxAuthProvider;
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -84,8 +85,8 @@ class _ProfileState extends State<Profile> {
                       height: 40.h,
                     ),
                     CircleAvatar(
-                      // backgroundImage:
-                      //     photoURL != null ? NetworkImage(photoURL!) : null,
+                      backgroundImage:
+                          photoURL != null ? NetworkImage(photoURL!) : null,
                       backgroundColor: Colors.grey,
                       maxRadius: 50,
                       child: photoURL == null
@@ -94,7 +95,8 @@ class _ProfileState extends State<Profile> {
                               size: 50,
                               color: Colors.white,
                             )
-                          : null,
+                          : Image.asset(
+                              "lib/presentation/assets/logos/app_logo_light.svg"),
                     ),
                     SizedBox(
                       height: 20.h,
