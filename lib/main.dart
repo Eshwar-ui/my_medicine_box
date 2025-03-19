@@ -14,7 +14,6 @@ import 'package:my_medicine_box/theme/dark_theme.dart';
 import 'package:my_medicine_box/theme/light_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-
 import 'providers/data providers/detailpage_provider.dart';
 
 Future<void> main() async {
@@ -22,6 +21,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(
     const MyApp(),
   );

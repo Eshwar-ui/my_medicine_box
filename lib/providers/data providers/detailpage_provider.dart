@@ -7,9 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 
 class DetailPageProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   String medicineName = "";
   String dosage = "";
@@ -21,13 +25,24 @@ class DetailPageProvider with ChangeNotifier {
   String message = "";
   Color messageColor = Colors.black;
 
-  // Text recognition and data organization
+  DetailPageProvider() {
+    _initializeNotifications();
+  }
+
+  void _initializeNotifications() {
+    tz.initializeTimeZones();
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
   Future<void> performTextRecognition(File image) async {
     final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
     try {
       final inputImage = InputImage.fromFile(image);
       final recognizedText = await textRecognizer.processImage(inputImage);
-
       final organizedData = await _organizeData(recognizedText.text);
 
       medicineName = organizedData['medicine_name'] ?? "";
@@ -67,41 +82,30 @@ class DetailPageProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final rawResponse = data['choices'][0]['message']['content'].trim();
-
       final jsonStart = rawResponse.indexOf("{");
       final jsonEnd = rawResponse.lastIndexOf("}");
-
       if (jsonStart != -1 && jsonEnd != -1) {
         final jsonString = rawResponse.substring(jsonStart, jsonEnd + 1);
         return Map<String, String>.from(jsonDecode(jsonString));
-      } else {
-        throw const FormatException(
-            "Could not extract valid JSON from GPT response");
       }
-    } else {
-      throw Exception('Failed to process data');
     }
+    throw Exception('Failed to process data');
   }
 
-  // Set the message and trigger UI update
   void setMessage(String newMessage, Color newColor) {
     message = newMessage;
     messageColor = newColor;
-    notifyListeners(); // This will notify the UI to rebuild with the updated message
+    notifyListeners();
   }
 
-  // Function to check if the medicine exists
   Future<void> checkMedicine({
     required String userId,
     required String medicineName,
     required String companyName,
   }) async {
     try {
-      // Reference to the medicines sub-collection
       final medicinesRef =
           _firestore.collection('users').doc(userId).collection('medicines');
-
-      // Query the medicines sub-collection to check for matching medicine names
       final querySnapshot = await medicinesRef
           .where('medicine_name', isEqualTo: medicineName)
           .get();
@@ -109,7 +113,6 @@ class DetailPageProvider with ChangeNotifier {
       if (querySnapshot.docs.isNotEmpty) {
         bool foundMatchingCompany = false;
 
-        // Iterate through the results to check the company name
         for (var doc in querySnapshot.docs) {
           final data = doc.data();
           if (data['company_name'] == companyName) {
@@ -119,26 +122,19 @@ class DetailPageProvider with ChangeNotifier {
         }
 
         if (foundMatchingCompany) {
-          print("This is a regular medicine.");
           setMessage("This is a regular medicine.", Colors.green);
         } else {
-          print("Medicine already exists with a different company name.");
           setMessage("Medicine already exists with a different company name.",
               Colors.red);
         }
       } else {
-        // No matching medicine name found
-        print("This is a new medicine.");
         setMessage("This is a new medicine.", Colors.green);
       }
     } catch (e) {
-      print("Error checking medicine: $e");
-      setMessage(
-          "Error checking medicine.", Colors.red); // Notify user about error
+      setMessage("Error checking medicine.", Colors.red);
     }
   }
 
-  // Function to add medicine to the user's collection
   Future<void> addMedicine({
     required String userId,
     required String medicineName,
@@ -148,11 +144,8 @@ class DetailPageProvider with ChangeNotifier {
     required String expiryDate,
   }) async {
     try {
-      // Reference to the user's medicines collection
       final medicinesRef =
           _firestore.collection('users').doc(userId).collection('medicines');
-
-      // Use medicineName as the document ID
       await medicinesRef.doc(medicineName).set({
         'medicine_name': medicineName,
         'company_name': companyName,
@@ -161,9 +154,32 @@ class DetailPageProvider with ChangeNotifier {
         'expiry_date': expiryDate,
         'added_at': FieldValue.serverTimestamp(),
       });
+
+      DateTime expiryDateTime = DateTime.parse("01-$expiryDate");
+      DateTime reminderDate =
+          expiryDateTime.subtract(const Duration(days: 517));
+      if (reminderDate.isAfter(DateTime.now())) {
+        _saveNotificationToFirebase(userId, medicineName, reminderDate);
+      }
     } catch (e) {
-      // Handle errors and show a failure message
       setMessage("Error adding medicine.", Colors.red);
+    }
+  }
+
+  Future<void> _saveNotificationToFirebase(
+      String userId, String medicineName, DateTime reminderDate) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .doc(medicineName)
+          .set({
+        'medicine_name': medicineName,
+        'reminder_date': Timestamp.fromDate(reminderDate),
+      });
+    } catch (e) {
+      print("Error saving notification: $e");
     }
   }
 }

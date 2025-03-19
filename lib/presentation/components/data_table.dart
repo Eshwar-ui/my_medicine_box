@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_medicine_box/providers/medicinedata_provider.dart';
@@ -13,22 +11,40 @@ class MyTable extends StatefulWidget {
   State<MyTable> createState() => _MyTableState();
 }
 
-class _MyTableState extends State<MyTable> {
+class _MyTableState extends State<MyTable> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("Post frame callback called");
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId != null) {
-        context.read<MedicineProvider>().fetchMedicines(userId);
-      }
+      _fetchMedicines();
     });
+
+    // Add observer to listen to navigation changes
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    // Remove observer when widget is disposed
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void didPopNext() {
+    // This method is called when the user navigates back to the screen
+    print("Navigated back to home page");
+    _fetchMedicines();
+  }
+
+  void _fetchMedicines() {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      context.read<MedicineProvider>().fetchMedicines(userId);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Building MyTable widget");
     return Consumer<MedicineProvider>(
       builder: (context, medicineProvider, child) {
         final medicineList = medicineProvider.medicineList;
@@ -53,45 +69,55 @@ class _MyTableState extends State<MyTable> {
                       ),
                       columns: [
                         DataColumn(
-                            label: Text(
-                          "Medicine Name",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary),
-                        )),
+                          label: Text(
+                            "Medicine Name",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
+                          ),
+                        ),
                         DataColumn(
-                            label: Text(
-                          "Company Name",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary),
-                        )),
+                          label: Text(
+                            "Company Name",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
+                          ),
+                        ),
                         DataColumn(
-                            label: Text(
-                          "Formula",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary),
-                        )),
+                          label: Text(
+                            "Formula",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
+                          ),
+                        ),
                         DataColumn(
-                            label: Text(
-                          "MFG Date",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary),
-                        )),
+                          label: Text(
+                            "MFG Date",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
+                          ),
+                        ),
                         DataColumn(
-                            label: Text(
-                          "EXP Date",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary),
-                        )),
+                          label: Text(
+                            "EXP Date",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary),
+                          ),
+                        ),
                       ],
                       rows: List<DataRow>.generate(
                         medicineList.length,

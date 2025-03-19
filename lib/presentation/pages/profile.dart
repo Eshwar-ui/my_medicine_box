@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_medicine_box/presentation/components/profile_buttons.dart';
+import 'package:my_medicine_box/presentation/pages/reminders%20page.dart';
 import 'package:my_medicine_box/presentation/pages/theme_selectingpage.dart';
 // ignore: library_prefixes
 import 'package:my_medicine_box/providers/authentication/auth_provider.dart'
@@ -95,8 +96,7 @@ class _ProfileState extends State<Profile> {
                               size: 50,
                               color: Colors.white,
                             )
-                          : Image.asset(
-                              "lib/presentation/assets/logos/app_logo_light.svg"),
+                          : null,
                     ),
                     SizedBox(
                       height: 20.h,
@@ -144,7 +144,12 @@ class _ProfileState extends State<Profile> {
                     ),
                     myButton(
                       text: "remainder",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RemindersPage()));
+                      },
                       icon: Icons.timer_outlined,
                     ),
                     myButton(
