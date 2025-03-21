@@ -2,6 +2,7 @@
     <application
         android:label="my_medicine_box"
         android:name="android.app.Application"
+        android:enableOnBackInvokedCallback="true"
 
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -63,7 +63,7 @@ class _RemindersPageState extends State<RemindersPage> {
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(
                       child: Text("No reminders set up yet.",
-                          style: TextStyle(color: Colors.grey[900])));
+                          style: TextStyle(color: Colors.white)));
                 }
 
                 final notifications = snapshot.data!.docs;
