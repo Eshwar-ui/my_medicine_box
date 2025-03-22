@@ -1,10 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_medicine_box/presentation/components/app_assets.dart';
 import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/register_page.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:my_medicine_box/providers/authentication/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class ShowPasswordField extends StatefulWidget {
   const ShowPasswordField({super.key});
@@ -24,10 +28,16 @@ class _ShowPasswordFieldState extends State<ShowPasswordField> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextField(
       obscureText: _isObscured,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.all(20),
         border: const OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -63,6 +73,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     final appAssets = Theme.of(context).extension<AppAssets>();
     final logoPath =
         appAssets?.logo ?? 'lib/presentation/assets/logos/app_logo_light.svg';
@@ -70,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 150),
+            padding: EdgeInsets.symmetric(horizontal: 50.w, vertical: 150.h),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -79,118 +91,119 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 //email text feild
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: TextField(
-                    cursorColor: Theme.of(context).colorScheme.inversePrimary,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(20),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      prefixIcon: Icon(
-                        Icons.person,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
-                      hintText: "email",
-                      fillColor: Theme.of(context).colorScheme.primary,
-                      filled: true,
-                    ),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.inversePrimary,
-                    ),
-                  ),
-                ),
-                //gap
-                const SizedBox(height: 10),
-                //password text feild
-                const DecoratedBox(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    child: ShowPasswordField()),
-                // forgot password
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      height: 40,
-                      child: TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "forgot password?",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                // login
-                SizedBox(
-                  width: 500,
-                  height: 50,
-                  child: ElevatedButton(
-                      style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(
-                              Theme.of(context).colorScheme.secondary),
-                          foregroundColor: WidgetStatePropertyAll(Colors.white),
-                          textStyle: const WidgetStatePropertyAll(TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.bold)),
-                          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)))),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
-                        );
-                      },
-                      child: const Text(
-                        "login",
-                      )),
-                ),
-                // don't have
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text("Don't have account?",
-                        style: TextStyle(
-                            fontSize: 17,
-                            color: Theme.of(context).colorScheme.inversePrimary,
-                            fontWeight: FontWeight.w400)),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const RegisterPage()),
-                          );
-                        },
-                        child: Text("Register now",
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                                fontWeight: FontWeight.w600)))
-                  ],
-                ),
+                // DecoratedBox(
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.all(Radius.circular(10)),
+                //   ),
+                //   child: TextField(
+                //     cursorColor: Theme.of(context).colorScheme.inversePrimary,
+                //     decoration: InputDecoration(
+                //       contentPadding: EdgeInsets.all(20),
+                //       border: OutlineInputBorder(
+                //           borderSide: BorderSide.none,
+                //           borderRadius: BorderRadius.all(Radius.circular(10))),
+                //       prefixIcon: Icon(
+                //         Icons.person,
+                //         color: Theme.of(context).colorScheme.inversePrimary,
+                //       ),
+                //       hintText: "email",
+                //       fillColor: Theme.of(context).colorScheme.primary,
+                //       filled: true,
+                //     ),
+                //     style: TextStyle(
+                //       color: Theme.of(context).colorScheme.inversePrimary,
+                //     ),
+                //   ),
+                // ),
+                // //gap
+                // SizedBox(height: 10.h),
+                // //password text feild
+                // const DecoratedBox(
+                //     decoration: BoxDecoration(
+                //       borderRadius: BorderRadius.all(Radius.circular(10)),
+                //     ),
+                //     child: ShowPasswordField()),
+                // // forgot password
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.end,
+                //   children: [
+                //     // ignore: sized_box_for_whitespace
+                //     Container(
+                //       height: 40.h,
+                //       child: TextButton(
+                //         onPressed: () {},
+                //         child: Text(
+                //           "forgot password?",
+                //           style: TextStyle(
+                //               fontSize: 14.sp,
+                //               color:
+                //                   Theme.of(context).colorScheme.inversePrimary),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // // login
+                // SizedBox(
+                //   width: 500.w,
+                //   height: 50.h,
+                //   child: ElevatedButton(
+                //       style: ButtonStyle(
+                //           backgroundColor: WidgetStatePropertyAll(
+                //               Theme.of(context).colorScheme.secondary),
+                //           foregroundColor: WidgetStatePropertyAll(Colors.white),
+                //           textStyle: WidgetStatePropertyAll(TextStyle(
+                //               fontSize: 25.sp, fontWeight: FontWeight.bold)),
+                //           shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                //               borderRadius: BorderRadius.circular(10)))),
+                //       onPressed: () async {
+                //         await authProvider.login(
+                //           context,
+                //           emailController.text,
+                //           passwordController.text,
+                //         );
+                //       },
+                //       child: const Text(
+                //         "login",
+                //       )),
+                // ),
+                // // don't have
+                // Row(
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: <Widget>[
+                //     Text("Don't have account?",
+                //         style: TextStyle(
+                //             fontSize: 15.sp,
+                //             color: Theme.of(context).colorScheme.inversePrimary,
+                //             fontWeight: FontWeight.w400)),
+                //     TextButton(
+                //         onPressed: () {
+                //           Navigator.pushReplacement(
+                //             context,
+                //             MaterialPageRoute(
+                //                 builder: (context) => const RegisterPage()),
+                //           );
+                //         },
+                //         child: Text("Register now",
+                //             style: TextStyle(
+                //                 fontSize: 16.sp,
+                //                 color: Theme.of(context).colorScheme.secondary,
+                //                 fontWeight: FontWeight.w600)))
+                //   ],
+                // ),
 
-                Divider(
-                  color: Colors.grey,
-                  thickness: 1,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
+                // Divider(
+                //   color: Colors.grey,
+                //   thickness: 1.sp,
+                // ),
+                // SizedBox(
+                //   height: 10.h,
+                // ),
                 // google sign in
                 SizedBox(
-                  width: 500,
-                  height: 50,
+                  width: 500.w,
+                  height: 70.h,
                   child: ElevatedButton.icon(
                     icon: Icon(MdiIcons.google),
                     style: ButtonStyle(
@@ -199,15 +212,12 @@ class _LoginPageState extends State<LoginPage> {
                         elevation: const WidgetStatePropertyAll(10),
                         foregroundColor: WidgetStatePropertyAll(
                             Theme.of(context).colorScheme.inversePrimary),
-                        textStyle: const WidgetStatePropertyAll(TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.w300)),
+                        textStyle: WidgetStatePropertyAll(TextStyle(
+                            fontSize: 25.sp, fontWeight: FontWeight.w300)),
                         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
-                      );
+                    onPressed: () async{
+                      await authProvider.signInWithGoogle(context);
                     },
                     label: const Text("sign in with google"),
                   ),

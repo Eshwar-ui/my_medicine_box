@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_medicine_box/presentation/pages/detail_page.dart';
 
@@ -37,56 +38,6 @@ class _FabState extends State<Fab> {
       );
     }
   }
-
-  void _showImageSourceOptionsOld() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
-                onTap: () async {
-                  Navigator.pop(ctx); // Close the modal
-                  await _pickImage(ImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo),
-                title: const Text('Gallery'),
-                onTap: () async {
-                  Navigator.pop(ctx); // Close the modal
-                  await _pickImage(ImageSource.gallery);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // Future<void> _pickImage(ImageSource source) async {
-  //   XFile? xfile = await imagePicker.pickImage(source: source);
-
-  //   if (xfile != null) {
-  //     File image = File(xfile.path);
-  //     Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-  //       return DetailPage(image);
-  //     }));
-  //   } else {
-  //     // Show a message if the user cancels the image selection
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('No image selected')),
-  //     );
-  //   }
-  // }
 
   void _showImageSourceOptions() {
     showModalBottomSheet(
