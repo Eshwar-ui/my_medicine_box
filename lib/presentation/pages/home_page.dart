@@ -1,6 +1,7 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_medicine_box/presentation/components/Fab.dart';
 import 'package:my_medicine_box/presentation/pages/dashbord.dart';
@@ -8,7 +9,7 @@ import 'package:my_medicine_box/presentation/pages/dashbord.dart';
 import 'package:my_medicine_box/presentation/pages/profile.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -32,49 +33,54 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _pages[_selectedIndex],
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: BottomAppBar(
-          color: const Color(0xff1D3557),
-          shape: const CircularNotchedRectangle(),
-          notchMargin: 13,
-          child: BottomNavigationBar(
-            elevation: 0,
-            backgroundColor: const Color.fromARGB(1, 29, 53, 87),
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.only(right: 50),
-                    child: Icon(
-                      Icons.home_outlined,
-                      color: Colors.white,
-                    ),
+      resizeToAvoidBottomInset: false,
+      body: _pages[_selectedIndex],
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Fab(),
+      bottomNavigationBar: BottomAppBar(
+        height: 85.h,
+        color: const Color(0xff1D3557),
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 13.sp,
+        child: BottomNavigationBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(right: 50.sp),
+                  child: Icon(
+                    Icons.home_outlined,
+                    color: Colors.white,
+                    size: 25.sp,
                   ),
-                  label: '',
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(right: 50),
-                    child: Icon(Icons.home),
-                  )),
-              BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.only(left: 50),
-                    child: Icon(
-                      Icons.person_outline_rounded,
-                      color: Colors.white,
-                    ),
+                ),
+                label: "",
+                activeIcon: Padding(
+                  padding: EdgeInsets.only(right: 50.sp),
+                  child: Icon(Icons.home),
+                )),
+            BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(left: 50.sp),
+                  child: Icon(
+                    Icons.person_outline_rounded,
+                    color: Colors.white,
+                    size: 25.sp,
                   ),
-                  label: '',
-                  activeIcon: Padding(
-                    padding: EdgeInsets.only(left: 50),
-                    child: Icon(Icons.person),
-                  ))
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: Colors.white,
-            onTap: _onItemTapped,
-            type: BottomNavigationBarType.fixed,
-          ),
+                ),
+                label: "",
+                activeIcon: Padding(
+                  padding: EdgeInsets.only(left: 50.sp),
+                  child: Icon(Icons.person),
+                ))
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          onTap: _onItemTapped,
+          // type: BottomNavigationBarType.fixed,
         ),
-        floatingActionButton: const Fab());
+      ),
+    );
   }
 }

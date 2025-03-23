@@ -1,6 +1,9 @@
-// ignore: file_names
+// ignore_for_file: file_names
+
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_medicine_box/presentation/pages/detail_page.dart';
 
@@ -38,6 +41,7 @@ class _FabState extends State<Fab> {
 
   void _showImageSourceOptions() {
     showModalBottomSheet(
+      backgroundColor: Theme.of(context).colorScheme.secondary,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -49,7 +53,10 @@ class _FabState extends State<Fab> {
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Camera'),
+                title: Text(
+                  'Camera',
+                  style: TextStyle(fontSize: 20.sp),
+                ),
                 onTap: () async {
                   Navigator.pop(ctx); // Close the modal
                   await _pickImage(ImageSource.camera);
@@ -57,7 +64,10 @@ class _FabState extends State<Fab> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo),
-                title: const Text('Gallery'),
+                title: Text(
+                  'Gallery',
+                  style: TextStyle(fontSize: 20.sp),
+                ),
                 onTap: () async {
                   Navigator.pop(ctx); // Close the modal
                   await _pickImage(ImageSource.gallery);
@@ -72,20 +82,27 @@ class _FabState extends State<Fab> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      autofocus: true,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      shape: const CircleBorder(
-        side: BorderSide(
-            color: Color(0xff1D3557),
-            width: 9,
-            strokeAlign: BorderSide.strokeAlignOutside),
-      ),
-      onPressed: _showImageSourceOptions,
-      child: Icon(
-        Icons.camera_alt,
-        color: Theme.of(context).colorScheme.inversePrimary,
-        size: 29,
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
+    return Visibility(
+      visible: !isKeyboardVisible,
+      child: FloatingActionButton(
+        isExtended: true,
+        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        shape: CircleBorder(
+          side: BorderSide(
+              color: const Color(0xff1D3557),
+              width: 8.w,
+              strokeAlign: BorderSide.strokeAlignOutside),
+        ),
+        onPressed: () async {
+          return _showImageSourceOptions();
+        },
+        child: Icon(
+          Icons.camera_alt,
+          color: Theme.of(context).colorScheme.inversePrimary,
+          size: 29,
+        ),
       ),
     );
   }

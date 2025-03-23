@@ -1,0 +1,2 @@
+C:/Users/eshwar/Desktop/PROJECTS/my_medicine_box/android/app/.cxx/Debug/1l6sb683/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/eshwar/Desktop/PROJECTS/my_medicine_box/android/app/.cxx/Debug/1l6sb683/x86_64/CMakeFiles/rebuild_cache.dir
