@@ -8,6 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:my_medicine_box/services/local_notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
 class DetailPageProvider with ChangeNotifier {
@@ -43,8 +44,9 @@ class DetailPageProvider with ChangeNotifier {
     try {
       final inputImage = InputImage.fromFile(image);
       final recognizedText = await textRecognizer.processImage(inputImage);
+      print(recognizedText.text);
       final organizedData = await _organizeData(recognizedText.text);
-
+      print(organizedData);
       medicineName = organizedData['medicine_name'] ?? "";
       dosage = organizedData['dosage'] ?? "";
       formula = organizedData['formula'] ?? "";
@@ -78,7 +80,11 @@ class DetailPageProvider with ChangeNotifier {
         ]
       }),
     );
-
+    print(response.statusCode);
+    print('hello');
+    print(response.body);
+    print('hello');
+    print('hello');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final rawResponse = data['choices'][0]['message']['content'].trim();
@@ -135,6 +141,37 @@ class DetailPageProvider with ChangeNotifier {
     }
   }
 
+  // Future<void> addMedicine({
+  //   required String userId,
+  //   required String medicineName,
+  //   required String companyName,
+  //   required String formula,
+  //   required String manufacturingDate,
+  //   required String expiryDate,
+  // }) async {
+  //   try {
+  //     final medicinesRef =
+  //         _firestore.collection('users').doc(userId).collection('medicines');
+  //     await medicinesRef.doc(medicineName).set({
+  //       'medicine_name': medicineName,
+  //       'company_name': companyName,
+  //       'formula': formula,
+  //       'manufacturing_date': manufacturingDate,
+  //       'expiry_date': expiryDate,
+  //       'added_at': FieldValue.serverTimestamp(),
+  //     });
+
+  //     DateTime expiryDateTime = DateTime.parse("01-$expiryDate");
+  //     DateTime reminderDate =
+  //         expiryDateTime.subtract(const Duration(days: 517));
+  //     if (reminderDate.isAfter(DateTime.now())) {
+  //       _saveNotificationToFirebase(userId, medicineName, reminderDate);
+  //     }
+  //   } catch (e) {
+  //     setMessage("Error adding medicine.", Colors.red);
+  //   }
+  // }
+
   Future<void> addMedicine({
     required String userId,
     required String medicineName,
@@ -146,7 +183,9 @@ class DetailPageProvider with ChangeNotifier {
     try {
       final medicinesRef =
           _firestore.collection('users').doc(userId).collection('medicines');
-      await medicinesRef.doc(medicineName).set({
+
+      // Add a new document with an auto-generated ID
+      await medicinesRef.add({
         'medicine_name': medicineName,
         'company_name': companyName,
         'formula': formula,
@@ -155,14 +194,24 @@ class DetailPageProvider with ChangeNotifier {
         'added_at': FieldValue.serverTimestamp(),
       });
 
-      DateTime expiryDateTime = DateTime.parse("01-$expiryDate");
+      // Convert expiry date to DateTime format
+      List<String> parts = expiryDate.split('-'); // Assuming format is MM-yyyy
+      DateTime expiryDateTime = DateTime(
+        int.parse(parts[1]), // Year
+        int.parse(parts[0]), // Month
+        1, // Default to the first day of the month
+      );
+      await LocalNotificationService()
+          .showMedicineAddedNotification(medicineName, expiryDate);
       DateTime reminderDate =
           expiryDateTime.subtract(const Duration(days: 517));
+
       if (reminderDate.isAfter(DateTime.now())) {
         _saveNotificationToFirebase(userId, medicineName, reminderDate);
       }
     } catch (e) {
       setMessage("Error adding medicine.", Colors.red);
+      print("Error adding medicine: $e");
     }
   }
 
