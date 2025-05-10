@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class MedicineProvider with ChangeNotifier {
-  // List to hold table data
   final List<Map<String, dynamic>> _medicineList = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -11,28 +10,26 @@ class MedicineProvider with ChangeNotifier {
   List<Map<String, dynamic>> get medicineList => _medicineList;
   bool get isLoading => _isLoading;
 
-  // Fetch medicines from Firestore
   Future<void> fetchMedicines(String userId) async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      // Reference to the medicines sub-collection
       final medicinesRef =
           _firestore.collection('users').doc(userId).collection('medicines');
 
-      // Get all documents in the medicines sub-collection
       final querySnapshot = await medicinesRef.get();
 
-      // Clear existing list and add new data
       _medicineList.clear();
       for (var doc in querySnapshot.docs) {
+        final data = doc.data();
         _medicineList.add({
-          'medicine_name': doc.data()['medicine_name'] ?? '',
-          'company_name': doc.data()['company_name'] ?? '',
-          'formula': doc.data()['formula'] ?? '',
-          'manufacturing_date': doc.data()['manufacturing_date'] ?? '',
-          'expiry_date': doc.data()['expiry_date'] ?? '',
+          'id': doc.id,
+          'medicine_name': data['medicine_name'] ?? '',
+          'company_name': data['company_name'] ?? '',
+          'formula': data['formula'] ?? '',
+          'manufacturing_date': data['manufacturing_date'] ?? '',
+          'expiry_date': data['expiry_date'] ?? '',
         });
       }
 
@@ -43,5 +40,36 @@ class MedicineProvider with ChangeNotifier {
       notifyListeners();
       print("Error fetching medicines: $e");
     }
+  }
+
+  int get totalMedicines => _medicineList.length;
+
+  int get nearExpiryCount {
+    final now = DateTime.now();
+    final threshold = now.add(const Duration(days: 30)); // or 7, up to you
+    return _medicineList.where((medicine) {
+      final expiryStr = medicine['expiry_date'];
+      if (expiryStr == null || expiryStr.isEmpty) return false;
+      try {
+        final expiry = DateTime.parse(expiryStr);
+        return expiry.isAfter(now) && expiry.isBefore(threshold);
+      } catch (_) {
+        return false;
+      }
+    }).length;
+  }
+
+  int get expiredCount {
+    final now = DateTime.now();
+    return _medicineList.where((medicine) {
+      final expiryStr = medicine['expiry_date'];
+      if (expiryStr == null || expiryStr.isEmpty) return false;
+      try {
+        final expiry = DateTime.parse(expiryStr);
+        return expiry.isBefore(now);
+      } catch (_) {
+        return false;
+      }
+    }).length;
   }
 }

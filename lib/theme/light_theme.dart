@@ -11,10 +11,14 @@ ThemeData lightmode = ThemeData(
   textTheme: GoogleFonts.poppinsTextTheme(),
   brightness: Brightness.light,
   colorScheme: ColorScheme.light(
-    surface: Color(0xffD9CDB6),
-    primary: Color.fromARGB(255, 255, 255, 255),
-    secondary: Color(0xff457B9D),
-    tertiary: Color(0xff1D3557),
+    primary: Color(0xff0081D2),
+    onPrimary: Color(0xffE6F4FD),
+    secondary: Color(0xff006BAF),
+    onSecondary: Color(0xffE6F4FD),
+    tertiary: Color(0xff1A304E),
+    onTertiary: Color(0xffFFFFFF),
+    surface: Color(0xffFFFFFF),
+    onSurface: Color(0xff0A131E),
     inversePrimary: Color(0xff000000),
   ),
 );
