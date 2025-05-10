@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:my_medicine_box/presentation/pages/home_page.dart';
+import 'package:my_medicine_box/main.dart';
 import 'package:my_medicine_box/providers/data%20providers/detailpage_provider.dart';
+import 'package:my_medicine_box/utils/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -20,22 +23,92 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   late TextRecognizer textRecognizer;
+  bool _is3MonthSelected = false;
+  bool _is6MonthSelected = false;
 
   @override
   void initState() {
     super.initState();
     textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DetailPageProvider>().performTextRecognition(widget.image);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context
+          .read<DetailPageProvider>()
+          .performTextRecognition(widget.image);
+      await _checkMedicine(context.read<DetailPageProvider>());
+      _calculateReminderDate();
     });
   }
 
+  void _calculateReminderDate() {
+    final provider = context.read<DetailPageProvider>();
+
+    reminderDate = null;
+    if (provider.expiryDate.isNotEmpty) {
+      try {
+        final expiry = DateFormat('dd-MM-yyyy').parse(provider.expiryDate);
+        reminderDate = expiry.subtract(const Duration(days: 30));
+      } catch (e) {
+        print('Error parsing expiry date: $e');
+      }
+    }
+  }
+
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<void> saveNotificationToFirebase(String userId, String medicineName,
+      DateTime reminderDate, String reminderType) async {
+    try {
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add({
+        'medicine_name': medicineName,
+        'reminder_date': Timestamp.fromDate(reminderDate),
+        'reminder_type': reminderType,
+      });
+    } catch (e) {
+      print("Error saving notification: $e");
+    }
+  }
+
+  Future<void> showAddedMedicineNotification(String medicineName) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'medicine_channel', // channel ID
+      'Medicine Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // notification ID
+      'Medicine Added',
+      '$medicineName has been added to your collection.',
+      platformChannelSpecifics,
+    );
+  }
+
+  DateTime? reminderDate; // Add this in your _DetailPageState class
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DetailPageProvider>();
 
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back_ios_new,
+                  size: 24,
+                  color: Theme.of(context).colorScheme.inversePrimary)),
+        ),
         body: provider.isLoading
             ? Center(
                 child: CircularProgressIndicator(
@@ -45,43 +118,230 @@ class _DetailPageState extends State<DetailPage> {
             : Padding(
                 padding: const EdgeInsets.all(30),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      height: 500.h,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: FileImage(
-                            widget.image,
+                    FlipCard(
+                      direction: FlipDirection.HORIZONTAL,
+                      front: Container(
+                        height: 500.h,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: FileImage(widget.image),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
+                          border: Border.all(
+                            width: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          borderRadius: BorderRadius.circular(30),
                         ),
-                        border: Border.all(
-                          width: 2,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
+                        // child: const FlipHintOverlay()
                       ),
-                      // child: Image.file(
-                      //   widget.image,
-                      //   fit: BoxFit.contain,
-                      // ),
+                      back: Container(
+                        height: 500.h,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            width: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              //
+                              Text(provider.medicineName,
+                                  style: AppTextStyles.H2(context).copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  )),
+                              // SizedBox(height: 10.h),
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                        width: 2,
+                                        color: provider.messageColor)),
+                                child: Text(
+                                  textAlign: TextAlign.center,
+                                  provider.message,
+                                  style: TextStyle(
+                                    color: provider.messageColor,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20.h),
+
+                              _buildRow(context, "Company Name",
+                                  provider.companyName),
+                              _buildRow(context, "Dosage", provider.dosage),
+                              _buildRow(context, "Formula", provider.formula),
+                              _buildRow(context, "MFG Date",
+                                  provider.manufacturingDate),
+                              _buildRow(
+                                  context, "EXP Date", provider.expiryDate),
+
+                              // Display the reminder date if it's available
+                              if (reminderDate != null)
+                                _buildRow(
+                                  context,
+                                  "Reminder Date",
+                                  DateFormat("dd-MM-yyyy")
+                                      .format(reminderDate!),
+                                ),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: _is3MonthSelected,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        _is3MonthSelected = value!;
+                                      });
+                                    },
+                                  ),
+                                  Text("3 Months Reminder"),
+                                ],
+                              ),
+
+                              // Checkbox for 6-month reminder
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: _is6MonthSelected,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        _is6MonthSelected = value!;
+                                      });
+                                    },
+                                  ),
+                                  Text("6 Months Reminder"),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
+                    SizedBox(height: 20.h),
+                    if (provider.expiryDate.isNotEmpty)
+                      GestureDetector(
+                        onTap: () async {
+                          // Fetch the userId from FirebaseAuth
+                          final userId = FirebaseAuth.instance.currentUser?.uid;
+
+                          if (userId != null) {
+                            try {
+                              // Call addMedicine to store data
+                              await provider.addMedicine(
+                                userId: userId,
+                                medicineName: provider.medicineName,
+                                companyName: provider.companyName,
+                                formula: provider.formula,
+                                manufacturingDate: provider.manufacturingDate,
+                                expiryDate: provider.expiryDate,
+                                remainder_for_3_months: _is3MonthSelected,
+                                remainder_for_6_months: _is6MonthSelected,
+                              );
+
+                              // Schedule reminders for 3-month and 6-month if selected
+                              if (_is3MonthSelected && reminderDate != null) {
+                                DateTime threeMonthReminder = reminderDate!
+                                    .subtract(const Duration(days: 90));
+                                await saveNotificationToFirebase(
+                                    userId,
+                                    provider.medicineName,
+                                    threeMonthReminder,
+                                    "3 months");
+                              }
+                              if (_is6MonthSelected && reminderDate != null) {
+                                DateTime sixMonthReminder = reminderDate!
+                                    .subtract(const Duration(days: 180));
+                                await saveNotificationToFirebase(
+                                    userId,
+                                    provider.medicineName,
+                                    sixMonthReminder,
+                                    "6 months");
+                              }
+                              // Schedule notification for the medicine expiry reminder
+                              // if (reminderDate != null &&
+                              //     reminderDate!.isAfter(DateTime.now())) {
+                              //   await saveNotificationToFirebase(
+                              //       userId, provider.medicineName, reminderDate!, "expiry");
+                              // }
+
+                              print(
+                                  "Medicine added successfully."); // Debugging log
+                            } catch (e) {
+                              provider.setMessage(
+                                  "Error adding medicine: ${e.toString()}",
+                                  Colors.red);
+                              print(
+                                  "Error adding medicine: $e"); // Debugging log
+                            }
+                          } else {
+                            provider.setMessage(
+                                "User not authenticated.", Colors.red);
+                          }
+                          // Show local notification
+                          await showAddedMedicineNotification(
+                              provider.medicineName);
+
+                          // ignore: use_build_context_synchronously
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 60.h,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Dim.S),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "+ADD TO COLLECTION",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    SizedBox(height: 20.h),
                     GestureDetector(
-                      onTap: () => _showDetailsModal(context, provider),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                       child: Container(
                         width: double.infinity,
-                        height: 50.h,
+                        height: 60.h,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            width: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          borderRadius: BorderRadius.circular(Dim.S),
+                          color: Theme.of(context).colorScheme.surface,
                         ),
                         child: Center(
                           child: Text(
-                            "View Details",
+                            "TRY AGAIN",
                             style: TextStyle(
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -98,23 +358,6 @@ class _DetailPageState extends State<DetailPage> {
   void dispose() {
     textRecognizer.close();
     super.dispose();
-  }
-
-  void _showDetailsModal(BuildContext context, DetailPageProvider provider) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(50)),
-      ),
-      builder: (ctx) {
-        // Schedule the checkMedicine function to be called after the current frame is drawn
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          await _checkMedicine(provider);
-        });
-
-        return DetailModal(provider: provider);
-      },
-    );
   }
 
   Future<void> _checkMedicine(DetailPageProvider provider) async {
@@ -139,187 +382,82 @@ class _DetailPageState extends State<DetailPage> {
       provider.setMessage("Error checking medicine.", Colors.red);
     }
   }
-}
-
-class DetailModal extends StatelessWidget {
-  final DetailPageProvider provider;
-
-  Future<void> saveNotificationToFirebase(
-      String userId, String medicineName, DateTime reminderDate) async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    try {
-      await firestore
-          .collection('users')
-          .doc(userId)
-          .collection('notifications')
-          .add({
-        'medicine_name': medicineName,
-        'reminder_date': Timestamp.fromDate(reminderDate),
-      });
-    } catch (e) {
-      print("Error saving notification: $e");
-    }
-  }
-
-  const DetailModal({required this.provider, Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<DetailPageProvider>(builder: (context, provider, child) {
-      DateTime? reminderDate;
-      try {
-        // Parse expiry date correctly
-        DateTime expiryDateTime =
-            DateFormat("dd-MM-yyyy").parse("01-${provider.expiryDate}");
-        reminderDate = expiryDateTime.subtract(const Duration(days: 517));
-      } catch (e) {
-        print("Error parsing expiry date: $e");
-      }
-
-      return Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          borderRadius: const BorderRadius.all(Radius.circular(30)),
-        ),
-        child: Container(
-          margin: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-          ),
-          padding: const EdgeInsets.all(30.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    // Fetch the userId from FirebaseAuth
-                    final userId = FirebaseAuth.instance.currentUser?.uid;
-
-                    if (userId != null) {
-                      try {
-                        // Call addMedicine to store data
-                        await provider.addMedicine(
-                          userId: userId,
-                          medicineName: provider.medicineName,
-                          companyName: provider.companyName,
-                          formula: provider.formula,
-                          manufacturingDate: provider.manufacturingDate,
-                          expiryDate: provider.expiryDate,
-                        );
-
-                        // Schedule notification for the medicine expiry reminder
-                        if (reminderDate != null &&
-                            reminderDate.isAfter(DateTime.now())) {
-                          await saveNotificationToFirebase(
-                              userId, provider.medicineName, reminderDate);
-                        }
-
-                        // ignore: use_build_context_synchronously
-                        Navigator.pop(context);
-                        // ignore: use_build_context_synchronously
-                        Navigator.pop(context, true);
-                        print("Medicine added successfully."); // Debugging log
-                      } catch (e) {
-                        provider.setMessage(
-                            "Error adding medicine: ${e.toString()}",
-                            Colors.red);
-                        print("Error adding medicine: $e"); // Debugging log
-                      }
-                    } else {
-                      provider.setMessage(
-                          "User not authenticated.", Colors.red);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 2,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      "ADD+",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border:
-                          Border.all(width: 2, color: provider.messageColor)),
-                  child: Text(
-                    textAlign: TextAlign.center,
-                    provider.message,
-                    style: TextStyle(
-                      color: provider.messageColor,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-                _buildRow(context, "Medicine Name", provider.medicineName),
-                _buildRow(context, "Company Name", provider.companyName),
-                _buildRow(context, "Dosage", provider.dosage),
-                _buildRow(context, "Formula", provider.formula),
-                _buildRow(context, "MFG Date", provider.manufacturingDate),
-                _buildRow(context, "EXP Date", provider.expiryDate),
-
-                // Display the reminder date if it's available
-                if (reminderDate != null)
-                  _buildRow(
-                    context,
-                    "Reminder Date",
-                    DateFormat("dd-MM-yyyy").format(reminderDate),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
 
   Widget _buildRow(BuildContext context, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             "$label: ",
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.inversePrimary,
+            style: AppTextStyles.H4(context).copyWith(
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          SizedBox(width: 10.w),
-          Flexible(
+          SizedBox(width: 8.w),
+          Expanded(
             child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 16.sp,
-                color: Theme.of(context).colorScheme.inversePrimary,
-              ),
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              softWrap: true,
+              value,
+              textAlign: TextAlign.end,
+              style: AppTextStyles.BM(context).copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+class FlipHintOverlay extends StatefulWidget {
+  const FlipHintOverlay({super.key});
+
+  @override
+  State<FlipHintOverlay> createState() => _FlipHintOverlayState();
+}
+
+class _FlipHintOverlayState extends State<FlipHintOverlay> {
+  bool _showHint = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Hide the container after 10 seconds
+    Future.delayed(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() {
+          _showHint = false;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _showHint
+        ? Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            child: Center(
+              child: Text(
+                "Tap to flip",
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
+              ),
+            ),
+          )
+        : const SizedBox.shrink(); // Hide after 10 seconds
   }
 }

@@ -45,5 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Need camera access to capture medicine images</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>Need notification permission for medicine reminders</string>
+
 </dict>
 </plist>

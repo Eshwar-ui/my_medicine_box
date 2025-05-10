@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_medicine_box/presentation/pages/home_page.dart';
 import 'package:my_medicine_box/presentation/pages/login_page.dart';
 import 'package:my_medicine_box/providers/authentication/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:my_medicine_box/screens/dashboard.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -15,7 +15,7 @@ class AuthGate extends StatelessWidget {
         if (authProvider.user == null) {
           return const LoginPage(); // User not logged in
         }
-        return const HomePage(); // User is logged in
+        return const MyNavBar(); // User is logged in
       },
     );
   }
