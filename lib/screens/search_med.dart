@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:my_medicine_box/presentation/components/helper.dart';
+import 'package:my_medicine_box/presentation/components/medicine_card.dart';
 import 'package:my_medicine_box/utils/constants.dart';
 
 class SearchMedPage extends StatefulWidget {
@@ -32,6 +33,26 @@ class _SearchMedPageState extends State<SearchMedPage> {
     if (monthsLeft <= 1) return Colors.red;
     if (monthsLeft <= 4) return Colors.yellow;
     return Colors.green;
+  }
+
+  void _showMedicineDetails(BuildContext context, Medicine medicine) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: MedicineDetailsCard(
+            medicine: medicine,
+            onEdit: () {
+              Navigator.pop(context); // close the dialog before edit
+              print('Edit medicine: ${medicine.name}');
+              // Optionally navigate to edit page here
+            },
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -144,6 +165,15 @@ class _SearchMedPageState extends State<SearchMedPage> {
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 0, vertical: 6),
                             child: ListTile(
+                              onTap: () {
+                                _showMedicineDetails(
+                                  context,
+                                  Medicine.fromMap(
+                                    data,
+                                    data['id'] ?? '',
+                                  ),
+                                );
+                              },
                               leading: FutureBuilder<Color>(
                                 future: indicatorColor, // Your logic for color
                                 builder: (context, snapshot) {

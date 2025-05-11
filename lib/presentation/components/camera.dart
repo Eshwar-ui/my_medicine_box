@@ -157,24 +157,50 @@ class _CameraPageState extends State<CameraPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Stack(
-        clipBehavior: Clip.none,
+      body: Column(
         children: [
-          if (_isCameraInitialized && _cameraController != null)
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.8,
-              child: AspectRatio(
-                aspectRatio: _cameraController!.value.aspectRatio,
-                child: CameraPreview(_cameraController!),
-              ),
-            )
-          else
-            const Expanded(
-              child: Center(child: CircularProgressIndicator()),
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              if (_isCameraInitialized && _cameraController != null)
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: AspectRatio(
+                    aspectRatio: _cameraController!.value.aspectRatio,
+                    child: CameraPreview(_cameraController!),
+                  ),
+                )
+              else
+                const Expanded(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              Positioned(
+                  top: 32,
+                  left: 18,
+                  right: 18,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.close,
+                              color: Colors.white, size: 30)),
+                      // Spacer(),
+                      IconButton(
+                          onPressed: () async {
+                            await _showDisclaimerDialog();
+                          },
+                          icon: const Icon(Icons.info_outline,
+                              color: Colors.white, size: 30)),
+                    ],
+                  )),
+            ],
+          ),
           Positioned(
-            bottom: -100,
+            bottom: 0,
             left: 0,
             right: 0,
             child: Container(
@@ -214,28 +240,6 @@ class _CameraPageState extends State<CameraPage> {
               ),
             ),
           ),
-          Positioned(
-              top: 32,
-              left: 18,
-              right: 18,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.close,
-                          color: Colors.white, size: 30)),
-                  // Spacer(),
-                  IconButton(
-                      onPressed: () async {
-                        await _showDisclaimerDialog();
-                      },
-                      icon: const Icon(Icons.info_outline,
-                          color: Colors.white, size: 30)),
-                ],
-              )),
         ],
       ),
     );

@@ -23,8 +23,8 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   late TextRecognizer textRecognizer;
-  bool _is3MonthSelected = false;
-  bool _is6MonthSelected = false;
+  bool _is3MonthSelected = true;
+  bool _is6MonthSelected = true;
 
   @override
   void initState() {
@@ -123,20 +123,19 @@ class _DetailPageState extends State<DetailPage> {
                     FlipCard(
                       direction: FlipDirection.HORIZONTAL,
                       front: Container(
-                        height: 500.h,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: FileImage(widget.image),
-                            fit: BoxFit.cover,
+                          height: 500.h,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: FileImage(widget.image),
+                              fit: BoxFit.cover,
+                            ),
+                            border: Border.all(
+                              width: 2,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                          border: Border.all(
-                            width: 2,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        // child: const FlipHintOverlay()
-                      ),
+                          child: const FlipHintOverlay()),
                       back: Container(
                         height: 500.h,
                         padding: const EdgeInsets.all(20),
