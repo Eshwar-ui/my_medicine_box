@@ -4,12 +4,14 @@ import 'package:my_medicine_box/presentation/components/helper.dart';
 import 'package:my_medicine_box/utils/constants.dart'; // To parse dates
 
 class Medicine {
-  final String id; // Firestore document ID
+  final String id;
   final String name;
   final String company;
   final String formula;
   final String expiryDate;
   final String manufactureDate;
+  final bool remainderFor3Months; // New field
+  final bool remainderFor6Months; // New field
 
   Medicine({
     required this.id,
@@ -18,6 +20,8 @@ class Medicine {
     required this.formula,
     required this.expiryDate,
     required this.manufactureDate,
+    required this.remainderFor3Months, // Initialize new field
+    required this.remainderFor6Months, // Initialize new field
   });
 
   factory Medicine.fromMap(Map<String, dynamic> map, String docId) {
@@ -32,6 +36,10 @@ class Medicine {
       formula: map['formula'] ?? 'Unknown',
       expiryDate: map['expiry_date'] ?? 'Unknown',
       manufactureDate: map['manufacturing_date'] ?? 'Unknown',
+      remainderFor3Months:
+          map['remainder_for_3_months'] ?? false, // Parse boolean field
+      remainderFor6Months:
+          map['remainder_for_6_months'] ?? false, // Parse boolean field
     );
   }
 }
@@ -60,7 +68,6 @@ class MedicineDetailsCard extends StatelessWidget {
     }
 
     final expiry = _parseExpiryDate(medicine.expiryDate); // <-- Parse correctly
-
     final difference = expiry.difference(now).inDays;
 
     if (difference <= 30) {
@@ -76,70 +83,71 @@ class MedicineDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        elevation: 4,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    margin: const EdgeInsets.only(right: 8),
-                    decoration: BoxDecoration(
-                      color: _getIndicatorColor(),
-                      shape: BoxShape.circle,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: _getIndicatorColor(),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    medicine.name,
+                    style: AppTextStyles.H4(context).copyWith(
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  Expanded(
-                    child: Text(
-                      medicine.name,
-                      style: AppTextStyles.H4(context).copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: onEdit ?? () {},
-                    icon: const Icon(Icons.edit),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _buildDetailRow("Company", medicine.company, context),
-              _buildDetailRow("Formula", medicine.formula, context),
-              _buildDetailRow(
-                  "Manufactured Date", medicine.manufactureDate, context),
-              FutureBuilder<String>(
-                future: formatWithDefaultDay(medicine.expiryDate),
-                builder: (context, snapshot) {
-                  final formatted = snapshot.data ?? medicine.expiryDate;
-                  return _buildDetailRow("Expiry Date", formatted, context);
-                },
-              ),
-            ],
-          ),
+                ),
+                IconButton(
+                  onPressed: onEdit ?? () {},
+                  icon: const Icon(Icons.edit),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildDetailRow("Company", medicine.company, context),
+            _buildDetailRow("Formula", medicine.formula, context),
+            _buildDetailRow(
+                "Manufactured Date", medicine.manufactureDate, context),
+            FutureBuilder<String>(
+              future: formatWithDefaultDay(medicine.expiryDate),
+              builder: (context, snapshot) {
+                final formatted = snapshot.data ?? medicine.expiryDate;
+                return _buildDetailRow("Expiry Date", formatted, context);
+              },
+            ),
+            _buildDetailRow("Remainder for 3 Months",
+                medicine.remainderFor3Months ? 'Yes' : 'No', context),
+            _buildDetailRow("Remainder for 6 Months",
+                medicine.remainderFor6Months ? 'Yes' : 'No', context),
+          ],
         ),
       ),
     );
