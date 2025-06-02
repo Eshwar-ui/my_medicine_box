@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:my_medicine_box/presentation/pages/detail_page.dart';
 import 'package:my_medicine_box/utils/constants.dart';
+import 'package:image/image.dart' as img;
+import 'dart:typed_data';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key}) : super(key: key);
@@ -74,6 +76,35 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
+  Future<File> preprocessImage(File file) async {
+    final bytes = await file.readAsBytes();
+    img.Image? originalImage = img.decodeImage(bytes);
+    if (originalImage == null) return file;
+
+    // Resize the image
+    img.Image resized = img.copyResize(originalImage, width: 600);
+
+    if (originalImage.width > 1000) {
+      resized = img.copyResize(originalImage, width: 600);
+    } else {
+      resized = originalImage;
+    }
+
+    // Convert to grayscale
+    img.Image gray = img.grayscale(resized);
+
+    // Optional: increase contrast
+    img.Image contrast = img.adjustColor(gray, contrast: 1.2);
+
+    // Save processed image to a temp file
+    final processedBytes = Uint8List.fromList(img.encodeJpg(contrast));
+    final tempDir = Directory.systemTemp;
+    final processedFile = await File('${tempDir.path}/processed.jpg')
+        .writeAsBytes(processedBytes);
+
+    return processedFile;
+  }
+
   Future<void> _takePhoto() async {
     if (_cameraController == null || !_cameraController!.value.isInitialized)
       return;
@@ -81,11 +112,12 @@ class _CameraPageState extends State<CameraPage> {
     try {
       final XFile file = await _cameraController!.takePicture();
       if (!mounted) return;
+      File processed = await preprocessImage(File(file.path));
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DetailPage(File(file.path)),
+          builder: (context) => DetailPage([processed]),
         ),
       );
     } catch (e) {
@@ -93,19 +125,41 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
+  // Future<void> _pickFromGallery() async {
+  //   try {
+  //     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+  //     if (image != null && mounted) {
+  //       File processed = await preprocessImage(File(image.path));
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => DetailPage(processed),
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print('Error picking image: $e');
+  //   }
+  // }
+
   Future<void> _pickFromGallery() async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null && mounted) {
+      final List<XFile>? images = await _picker.pickMultiImage();
+      if (images != null && images.isNotEmpty && mounted) {
+        List<File> processedFiles = [];
+        for (var image in images) {
+          File processed = await preprocessImage(File(image.path));
+          processedFiles.add(processed);
+        }
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailPage(File(image.path)),
+            builder: (context) => DetailPage(processedFiles), // pass list here
           ),
         );
       }
     } catch (e) {
-      print('Error picking image: $e');
+      print('Error picking images: $e');
     }
   }
 
