@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:my_medicine_box/main.dart';
 import 'package:my_medicine_box/providers/data%20providers/detailpage_provider.dart';
+import 'package:my_medicine_box/services/local_notification_service.dart';
 import 'package:my_medicine_box/utils/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -73,24 +74,31 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Future<void> showAddedMedicineNotification(String medicineName) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'medicine_channel', // channel ID
+    const androidDetails = AndroidNotificationDetails(
+      'medicine_channel',
       'Medicine Notifications',
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
     );
 
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    const notificationDetails = NotificationDetails(android: androidDetails);
 
+    // 1. Show Local Notification
     await flutterLocalNotificationsPlugin.show(
-      0, // notification ID
+      0,
       'Medicine Added',
       '$medicineName has been added to your collection.',
-      platformChannelSpecifics,
+      notificationDetails,
     );
+
+    // 2. Store to local SharedPreferences
+    final notification = AppNotification(
+      title: 'Medicine Added',
+      message: '$medicineName has been added to your collection.',
+      timestamp: DateTime.now(),
+    );
+    await NotificationStorage().addNotification(notification);
   }
 
   DateTime? reminderDate; // Add this in your _DetailPageState class

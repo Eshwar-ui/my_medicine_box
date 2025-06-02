@@ -200,17 +200,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     listen: false);
                 await authprovider.logout(context);
               }),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     LocalNotificationService().showMedicineAddedNotification(
-              //       'Paracetamol',
-              //       '2025-12-01',
-              //     );
+              ElevatedButton(
+                onPressed: () {
+                  LocalNotificationService().showMedicineAddedNotification(
+                    'Paracetamol',
+                    '2025-12-01',
+                  );
 
-              //     print('BUTTON PRESSED');
-              //   },
-              //   child: Text('Test Notification'),
-              // )
+                  print('BUTTON PRESSED');
+                },
+                child: Text('Test Notification'),
+              )
             ],
           ),
         ),

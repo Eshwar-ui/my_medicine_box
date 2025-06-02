@@ -16,7 +16,7 @@ import 'package:my_medicine_box/providers/theme_provider.dart';
 import 'package:my_medicine_box/screens/dashboard.dart';
 import 'package:my_medicine_box/screens/profile.dart';
 import 'package:my_medicine_box/services/local_notification_service.dart';
-import 'package:my_medicine_box/test_page.dart';
+// import 'package:my_medicine_box/test_page.dart';
 import 'package:my_medicine_box/theme/dark_theme.dart';
 import 'package:my_medicine_box/theme/light_theme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -83,7 +83,6 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => ThemeProvider()),
             ChangeNotifierProvider(create: (_) => DetailPageProvider()),
             ChangeNotifierProvider(create: (_) => CameraToggleProvider()),
-            // ChangeNotifierProvider(create: (_) => LocalNotificationService()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
@@ -95,7 +94,6 @@ class MyApp extends StatelessWidget {
                 home: const SplashScreen(),
                 routes: {
                   '/login': (context) => const LoginPage(),
-                  '/register': (context) => const RegisterPage(),
                   '/home': (context) => const MyNavBar(),
                   '/profile': (context) => const ProfilePage(),
                 },
