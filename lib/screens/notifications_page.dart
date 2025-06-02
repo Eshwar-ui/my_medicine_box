@@ -37,3 +37,47 @@ class NotificationsPage extends StatelessWidget {
         ));
   }
 }
+
+// class NotificationsScreen extends StatelessWidget {
+//   final String userId;
+
+//   NotificationsScreen({required this.userId});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Notifications')),
+//       body: StreamBuilder(
+//         stream: FirebaseFirestore.instance
+//             .collection('users')
+//             .doc(userId)
+//             .collection('notifications')
+//             .orderBy('timestamp', descending: true)
+//             .snapshots(),
+//         builder: (context, snapshot) {
+//           if (!snapshot.hasData) return CircularProgressIndicator();
+
+//           final notifications = snapshot.data!.docs;
+
+//           return ListView.builder(
+//             itemCount: notifications.length,
+//             itemBuilder: (context, index) {
+//               final doc = notifications[index];
+//               final data = doc.data() as Map<String, dynamic>;
+
+//               return ListTile(
+//                 title: Text(data['title'] ?? ''),
+//                 subtitle: Text(data['body'] ?? ''),
+//                 tileColor: data['read'] == false ? Colors.blue[50] : null,
+//                 onTap: () {
+//                   // Mark as read
+//                   doc.reference.update({'read': true});
+//                 },
+//               );
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }

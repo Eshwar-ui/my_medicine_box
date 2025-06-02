@@ -40,6 +40,54 @@ Future<void> main() async {
   await notificationService.init();
 
   // Listen for FCM token refresh
+  // FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+  //   final user = firebase_auth.FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(user.uid)
+  //         .update({
+  //       'fcmToken': newToken,
+  //     });
+  //     print("FCM Token refreshed and updated in Firestore.");
+  //   }
+  // });
+
+  // Request permission for notifications
+  NotificationSettings settings =
+      await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+
+    final user = firebase_auth.FirebaseAuth.instance.currentUser;
+
+    // Get and save the FCM token
+    String? token = await FirebaseMessaging.instance.getToken();
+    print("FCM Token: $token");
+
+    if (user != null && token != null) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+        'fcmToken': token,
+      });
+      print("FCM Token saved to Firestore.");
+    }
+  } else {
+    print('User declined or has not accepted permission');
+  }
+
+  // Listen for FCM token refresh
   FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
     final user = firebase_auth.FirebaseAuth.instance.currentUser;
     if (user != null) {

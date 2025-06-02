@@ -99,179 +99,367 @@ class _MyTableState extends State<MyTable> with WidgetsBindingObserver {
       builder: (context, medicineProvider, child) {
         final medicineList = medicineProvider.medicineList;
 
-        return medicineProvider.isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.inversePrimary,
+        if (medicineProvider.isLoading) {
+          return Center(
+            child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.inversePrimary,
+            ),
+          );
+        }
+
+        if (medicineList.isEmpty) {
+          return Center(
+            child: Text(
+              'No medicines added',
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          );
+        }
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            headingRowHeight: 30,
+            horizontalMargin: 1,
+            border: TableBorder(
+              bottom: BorderSide(color: Theme.of(context).disabledColor),
+              verticalInside:
+                  BorderSide(color: Theme.of(context).disabledColor),
+            ),
+            columnSpacing: 25.sp,
+            columns: [
+              DataColumn(
+                label: Text(
+                  "#",
+                  style: AppTextStyles.BM(context)
+                      .copyWith(color: Theme.of(context).colorScheme.primary),
                 ),
-              )
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  headingRowHeight: 30,
-                  horizontalMargin: 1,
-                  border: TableBorder(
-                      bottom:
-                          BorderSide(color: Theme.of(context).disabledColor),
-                      verticalInside:
-                          BorderSide(color: Theme.of(context).disabledColor)),
-                  columnSpacing: 25.sp,
-                  columns: [
-                    DataColumn(
-                      label: Text(
-                        "#",
-                        style: AppTextStyles.BM(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        "Med Name",
-                        style: AppTextStyles.BM(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        "Company",
-                        style: AppTextStyles.BM(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        "Exp Date",
-                        style: AppTextStyles.BM(context).copyWith(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
-                    ),
-                  ],
-                  rows: medicineList.map((med) {
-                    final String expiryDateStr = med['expiry_date'] ?? '';
-                    final isExpiredFuture = _isExpired(expiryDateStr);
-                    final indicatorColorFuture =
-                        _getExpiryIndicatorColor(expiryDateStr);
-
-                    // Format the expiry date here if it's valid
-                    final formattedExpiryDate =
-                        _formatExpiryDate(expiryDateStr);
-
-                    return DataRow(
-                      cells: [
-                        DataCell(
-                          FutureBuilder<Color>(
-                            future: indicatorColorFuture,
-                            builder: (context, snapshot) {
-                              final color = snapshot.data ?? Colors.grey;
-                              return Center(
-                                child: CircleAvatar(
-                                  radius: 8.sp,
-                                  backgroundColor: color,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        DataCell(
-                          GestureDetector(
-                            onTap: () {
-                              _showMedicineDetails(
-                                context,
-                                Medicine.fromMap(
-                                  med,
-                                  med['id'] ?? '',
-                                ),
-                              );
-                            },
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: 80.w,
-                              ),
-                              child: FutureBuilder<bool>(
-                                future: isExpiredFuture,
-                                builder: (context, snapshot) {
-                                  final isExpired = snapshot.data ?? false;
-                                  return Text(
-                                    med['medicine_name'] ?? '',
-                                    style: AppTextStyles.BS(context).copyWith(
-                                      color: isExpired
-                                          ? Colors.grey
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .inversePrimary,
-                                      fontWeight: isExpired
-                                          ? FontWeight.normal
-                                          : FontWeight.bold,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                        DataCell(
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: 80.w,
-                            ),
-                            child: FutureBuilder<bool>(
-                              future: isExpiredFuture,
-                              builder: (context, snapshot) {
-                                final isExpired = snapshot.data ?? false;
-                                return Text(
-                                  med['company_name'] ?? '',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: isExpired
-                                        ? Colors.grey
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .inversePrimary,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        DataCell(
-                          FutureBuilder<DateTime>(
-                            future:
-                                DateUtilsHelper.parseExpiryDateWithDefaultDay(
-                                    expiryDateStr),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState !=
-                                  ConnectionState.done) {
-                                return const Text('Loading...');
-                              }
-
-                              final expiryDate = snapshot.data;
-                              final isExpired = expiryDate != null &&
-                                  expiryDate.isBefore(DateTime.now());
-
-                              final formattedDate = expiryDate != null
-                                  ? DateFormat('dd MMM yyyy').format(expiryDate)
-                                  : 'Invalid date';
-
-                              return Text(
-                                formattedDate,
-                                style: TextStyle(
-                                  color: isExpired
-                                      ? Colors.grey
-                                      : Theme.of(context)
-                                          .colorScheme
-                                          .inversePrimary,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
+              ),
+              DataColumn(
+                label: Text(
+                  "Med Name",
+                  style: AppTextStyles.BM(context)
+                      .copyWith(color: Theme.of(context).colorScheme.primary),
                 ),
+              ),
+              DataColumn(
+                label: Text(
+                  "Company",
+                  style: AppTextStyles.BM(context)
+                      .copyWith(color: Theme.of(context).colorScheme.primary),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  "Exp Date",
+                  style: AppTextStyles.BM(context)
+                      .copyWith(color: Theme.of(context).colorScheme.primary),
+                ),
+              ),
+            ],
+            rows: medicineList.map((med) {
+              final String expiryDateStr = med['expiry_date'] ?? '';
+              final isExpiredFuture = _isExpired(expiryDateStr);
+              final indicatorColorFuture =
+                  _getExpiryIndicatorColor(expiryDateStr);
+
+              final formattedExpiryDate = _formatExpiryDate(expiryDateStr);
+
+              return DataRow(
+                cells: [
+                  DataCell(
+                    FutureBuilder<Color>(
+                      future: indicatorColorFuture,
+                      builder: (context, snapshot) {
+                        final color = snapshot.data ?? Colors.grey;
+                        return Center(
+                          child: CircleAvatar(
+                            radius: 8.sp,
+                            backgroundColor: color,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  DataCell(
+                    GestureDetector(
+                      onTap: () {
+                        _showMedicineDetails(
+                          context,
+                          Medicine.fromMap(med, med['id'] ?? ''),
+                        );
+                      },
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: 80.w,
+                        ),
+                        child: FutureBuilder<bool>(
+                          future: isExpiredFuture,
+                          builder: (context, snapshot) {
+                            final isExpired = snapshot.data ?? false;
+                            return Text(
+                              med['medicine_name'] ?? '',
+                              style: AppTextStyles.BS(context).copyWith(
+                                color: isExpired
+                                    ? Colors.grey
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .inversePrimary,
+                                fontWeight: isExpired
+                                    ? FontWeight.normal
+                                    : FontWeight.bold,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 80.w,
+                      ),
+                      child: FutureBuilder<bool>(
+                        future: isExpiredFuture,
+                        builder: (context, snapshot) {
+                          final isExpired = snapshot.data ?? false;
+                          return Text(
+                            med['company_name'] ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: isExpired
+                                  ? Colors.grey
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    FutureBuilder<DateTime>(
+                      future: DateUtilsHelper.parseExpiryDateWithDefaultDay(
+                          expiryDateStr),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState != ConnectionState.done) {
+                          return const Text('Loading...');
+                        }
+
+                        final expiryDate = snapshot.data;
+                        final isExpired = expiryDate != null &&
+                            expiryDate.isBefore(DateTime.now());
+
+                        final formattedDate = expiryDate != null
+                            ? DateFormat('dd MMM yyyy').format(expiryDate)
+                            : 'Invalid date';
+
+                        return Text(
+                          formattedDate,
+                          style: TextStyle(
+                            color: isExpired
+                                ? Colors.grey
+                                : Theme.of(context).colorScheme.inversePrimary,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               );
+            }).toList(),
+          ),
+        );
       },
     );
   }
 }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<MedicineProvider>(
+//       builder: (context, medicineProvider, child) {
+//         final medicineList = medicineProvider.medicineList;
+
+//         return medicineProvider.isLoading
+//             ? Center(
+//                 child: CircularProgressIndicator(
+//                   color: Theme.of(context).colorScheme.inversePrimary,
+//                 ),
+//               )
+//             : SingleChildScrollView(
+//                 scrollDirection: Axis.horizontal,
+//                 child: DataTable(
+//                   headingRowHeight: 30,
+//                   horizontalMargin: 1,
+//                   border: TableBorder(
+//                       bottom:
+//                           BorderSide(color: Theme.of(context).disabledColor),
+//                       verticalInside:
+//                           BorderSide(color: Theme.of(context).disabledColor)),
+//                   columnSpacing: 25.sp,
+//                   columns: [
+//                     DataColumn(
+//                       label: Text(
+//                         "#",
+//                         style: AppTextStyles.BM(context).copyWith(
+//                             color: Theme.of(context).colorScheme.primary),
+//                       ),
+//                     ),
+//                     DataColumn(
+//                       label: Text(
+//                         "Med Name",
+//                         style: AppTextStyles.BM(context).copyWith(
+//                             color: Theme.of(context).colorScheme.primary),
+//                       ),
+//                     ),
+//                     DataColumn(
+//                       label: Text(
+//                         "Company",
+//                         style: AppTextStyles.BM(context).copyWith(
+//                             color: Theme.of(context).colorScheme.primary),
+//                       ),
+//                     ),
+//                     DataColumn(
+//                       label: Text(
+//                         "Exp Date",
+//                         style: AppTextStyles.BM(context).copyWith(
+//                             color: Theme.of(context).colorScheme.primary),
+//                       ),
+//                     ),
+//                   ],
+//                   rows: medicineList.map((med) {
+//                     final String expiryDateStr = med['expiry_date'] ?? '';
+//                     final isExpiredFuture = _isExpired(expiryDateStr);
+//                     final indicatorColorFuture =
+//                         _getExpiryIndicatorColor(expiryDateStr);
+
+//                     // Format the expiry date here if it's valid
+//                     final formattedExpiryDate =
+//                         _formatExpiryDate(expiryDateStr);
+
+//                     return DataRow(
+//                       cells: [
+//                         DataCell(
+//                           FutureBuilder<Color>(
+//                             future: indicatorColorFuture,
+//                             builder: (context, snapshot) {
+//                               final color = snapshot.data ?? Colors.grey;
+//                               return Center(
+//                                 child: CircleAvatar(
+//                                   radius: 8.sp,
+//                                   backgroundColor: color,
+//                                 ),
+//                               );
+//                             },
+//                           ),
+//                         ),
+//                         DataCell(
+//                           GestureDetector(
+//                             onTap: () {
+//                               _showMedicineDetails(
+//                                 context,
+//                                 Medicine.fromMap(
+//                                   med,
+//                                   med['id'] ?? '',
+//                                 ),
+//                               );
+//                             },
+//                             child: ConstrainedBox(
+//                               constraints: BoxConstraints(
+//                                 maxWidth: 80.w,
+//                               ),
+//                               child: FutureBuilder<bool>(
+//                                 future: isExpiredFuture,
+//                                 builder: (context, snapshot) {
+//                                   final isExpired = snapshot.data ?? false;
+//                                   return Text(
+//                                     med['medicine_name'] ?? '',
+//                                     style: AppTextStyles.BS(context).copyWith(
+//                                       color: isExpired
+//                                           ? Colors.grey
+//                                           : Theme.of(context)
+//                                               .colorScheme
+//                                               .inversePrimary,
+//                                       fontWeight: isExpired
+//                                           ? FontWeight.normal
+//                                           : FontWeight.bold,
+//                                     ),
+//                                   );
+//                                 },
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                         DataCell(
+//                           ConstrainedBox(
+//                             constraints: BoxConstraints(
+//                               maxWidth: 80.w,
+//                             ),
+//                             child: FutureBuilder<bool>(
+//                               future: isExpiredFuture,
+//                               builder: (context, snapshot) {
+//                                 final isExpired = snapshot.data ?? false;
+//                                 return Text(
+//                                   med['company_name'] ?? '',
+//                                   maxLines: 2,
+//                                   overflow: TextOverflow.ellipsis,
+//                                   style: TextStyle(
+//                                     color: isExpired
+//                                         ? Colors.grey
+//                                         : Theme.of(context)
+//                                             .colorScheme
+//                                             .inversePrimary,
+//                                   ),
+//                                 );
+//                               },
+//                             ),
+//                           ),
+//                         ),
+//                         DataCell(
+//                           FutureBuilder<DateTime>(
+//                             future:
+//                                 DateUtilsHelper.parseExpiryDateWithDefaultDay(
+//                                     expiryDateStr),
+//                             builder: (context, snapshot) {
+//                               if (snapshot.connectionState !=
+//                                   ConnectionState.done) {
+//                                 return const Text('Loading...');
+//                               }
+
+//                               final expiryDate = snapshot.data;
+//                               final isExpired = expiryDate != null &&
+//                                   expiryDate.isBefore(DateTime.now());
+
+//                               final formattedDate = expiryDate != null
+//                                   ? DateFormat('dd MMM yyyy').format(expiryDate)
+//                                   : 'Invalid date';
+
+//                               return Text(
+//                                 formattedDate,
+//                                 style: TextStyle(
+//                                   color: isExpired
+//                                       ? Colors.grey
+//                                       : Theme.of(context)
+//                                           .colorScheme
+//                                           .inversePrimary,
+//                                 ),
+//                               );
+//                             },
+//                           ),
+//                         ),
+//                       ],
+//                     );
+//                   }).toList(),
+//                 ),
+//               );
+//       },
+//     );
+//   }
+// }

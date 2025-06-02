@@ -41,14 +41,24 @@ class DetailPageProvider with ChangeNotifier {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> performTextRecognition(File image) async {
+  Future<void> performTextRecognition(List<File> images) async {
+    isLoading = true;
+    notifyListeners();
+
     final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+    String combinedText = "";
+
     try {
-      final inputImage = InputImage.fromFile(image);
-      final recognizedText = await textRecognizer.processImage(inputImage);
-      print(recognizedText.text);
-      final organizedData = await _organizeData(recognizedText.text);
-      print(organizedData);
+      for (final image in images) {
+        final inputImage = InputImage.fromFile(image);
+        final recognizedText = await textRecognizer.processImage(inputImage);
+        print("Text from one image:\n${recognizedText.text}");
+        combinedText += "${recognizedText.text}\n"; // Append with new line
+      }
+
+      final organizedData = await _organizeData(combinedText);
+      print("Organized Data from all images: $organizedData");
+
       medicineName = organizedData['medicine_name'] ?? "";
       dosage = organizedData['dosage'] ?? "";
       formula = organizedData['formula'] ?? "";
@@ -62,6 +72,30 @@ class DetailPageProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Future<void> performTextRecognition(File image) async {
+  //   isLoading = true;
+  //   notifyListeners();
+  //   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  //   try {
+  //     final inputImage = InputImage.fromFile(image);
+  //     final recognizedText = await textRecognizer.processImage(inputImage);
+  //     print(recognizedText.text);
+  //     final organizedData = await _organizeData(recognizedText.text);
+  //     print(organizedData);
+  //     medicineName = organizedData['medicine_name'] ?? "";
+  //     dosage = organizedData['dosage'] ?? "";
+  //     formula = organizedData['formula'] ?? "";
+  //     manufacturingDate = organizedData['manufacturing_date'] ?? "";
+  //     expiryDate = organizedData['expiry_date'] ?? "";
+  //     companyName = organizedData['company_name'] ?? "";
+  //   } catch (e) {
+  //     print('Error: $e');
+  //   } finally {
+  //     isLoading = false;
+  //     notifyListeners();
+  //   }
+  // }
 
   final String extractionPrompt = '''
 Extract and organize the following information into a clean, valid JSON format:
@@ -80,7 +114,9 @@ Extraction Rules:
 - Focus only on extracting the first available medicine name, dosage, formula, manufacturing date, expiry date, and company name.
 - If multiple dates are present in the text:
   - Only consider dates that are explicitly labeled or close to keywords like "MFG", "Manufacturing", "Mfd" for manufacturing date, and "EXP", "Expiry", "Exp" for expiry date.
-  - If MFG or EXP dates are missing or cannot be confidently identified, mark them as "Not present on sheet" in the output.
+  - If MFG or EXP dates are missing or cannot be confidently identified, mark them as "Not Available" in the output.
+  - If a date format is found **immediately before or after** "MFD", "Mfg", "Manufacturing", consider it as the manufacturing date.
+  - If a date format is found **immediately before or after** "EXP", "Expiry", "Exp", consider it as the expiry date.
 - Format all extracted dates strictly as "mm-yyyy".
 - If a month is followed by a 2-digit or 4-digit number (e.g., "Aug 24" or "August 2024"), treat the number as the year.
 - If no number follows a month, extract only the month and leave the year empty.
@@ -157,34 +193,85 @@ Dec, December
     try {
       final medicinesRef =
           _firestore.collection('users').doc(userId).collection('medicines');
-      final querySnapshot = await medicinesRef
-          .where('medicine_name', isEqualTo: medicineName)
-          .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        bool foundMatchingCompany = false;
+      final querySnapshot = await medicinesRef.get();
 
-        for (var doc in querySnapshot.docs) {
-          final data = doc.data();
-          if (data['company_name'] == companyName) {
-            foundMatchingCompany = true;
+      final normalizedMedicine = medicineName.trim().toLowerCase();
+      final normalizedCompany = companyName.trim().toLowerCase();
+
+      bool medicineExists = false;
+      bool sameCompanyExists = false;
+      print("Checking: $normalizedMedicine | $normalizedCompany");
+
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        print(data);
+        final existingMedicine =
+            (data['medicine_name'] as String?)?.trim().toLowerCase() ?? '';
+        final existingCompany =
+            (data['company_name'] as String?)?.trim().toLowerCase() ?? '';
+        print(existingMedicine);
+        print(existingCompany);
+        if (existingMedicine == normalizedMedicine) {
+          medicineExists = true;
+
+          if (existingCompany == normalizedCompany) {
+            sameCompanyExists = true;
             break;
           }
         }
+      }
 
-        if (foundMatchingCompany) {
-          setMessage("This is a regular medicine.", Colors.green);
-        } else {
-          setMessage("Medicine already exists with a different company name.",
-              Colors.red);
-        }
+      if (medicineExists && sameCompanyExists) {
+        setMessage("This is a regular medicine.", Colors.green);
+      } else if (medicineExists && !sameCompanyExists) {
+        setMessage("Medicine already exists with a different company name.",
+            Colors.red);
       } else {
         setMessage("This is a new medicine.", Colors.green);
       }
     } catch (e) {
+      print("Error: $e");
       setMessage("Error checking medicine.", Colors.red);
     }
   }
+
+  // Future<void> checkMedicine({
+  //   required String userId,
+  //   required String medicineName,
+  //   required String companyName,
+  // }) async {
+  //   try {
+  //     final medicinesRef =
+  //         _firestore.collection('users').doc(userId).collection('medicines');
+  //     final querySnapshot = await medicinesRef
+  //         .where('medicine_name', isEqualTo: medicineName)
+  //         .get();
+
+  //     if (querySnapshot.docs.isNotEmpty) {
+  //       bool foundMatchingCompany = false;
+
+  //       for (var doc in querySnapshot.docs) {
+  //         final data = doc.data();
+  //         if (data['company_name'] == companyName) {
+  //           foundMatchingCompany = true;
+  //           break;
+  //         }
+  //       }
+
+  //       if (foundMatchingCompany) {
+  //         setMessage("This is a regular medicine.", Colors.green);
+  //       } else {
+  //         setMessage("Medicine already exists with a different company name.",
+  //             Colors.red);
+  //       }
+  //     } else {
+  //       setMessage("This is a new medicine.", Colors.green);
+  //     }
+  //   } catch (e) {
+  //     setMessage("Error checking medicine.", Colors.red);
+  //   }
+  // }
 
   // Updated method to handle default day parsing
   Future<void> addMedicine({
