@@ -73,17 +73,6 @@ class AuthProvider with ChangeNotifier {
           'createdAt': FieldValue.serverTimestamp(),
         });
         // Initialize a sub-collection for medicines with an optional default entry
-        final medicinesCollection = docRef.collection('medicines');
-
-        // Add a default or placeholder medicine entry (optional)
-        await medicinesCollection.add({
-          'medicine_name': '', // Replace with actual data or leave empty
-          'dosage': '',
-          'formula': '',
-          'manufacturing_date': '',
-          'expiry_date': '',
-          'addedAt': FieldValue.serverTimestamp(),
-        });
 
         print(
             "User document and medicines sub-collection created successfully!");

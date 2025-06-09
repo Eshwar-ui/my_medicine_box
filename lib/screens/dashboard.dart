@@ -8,6 +8,7 @@ import 'package:my_medicine_box/presentation/components/camera.dart';
 import 'package:my_medicine_box/presentation/components/data_table.dart';
 import 'package:my_medicine_box/presentation/components/grid_view.dart';
 import 'package:my_medicine_box/providers/camera_preview_provider.dart';
+import 'package:my_medicine_box/screens/notifications_page.dart';
 import 'package:my_medicine_box/screens/profile.dart';
 import 'package:my_medicine_box/providers/authentication/auth_provider.dart'
     as MyAuthProvider;
@@ -230,7 +231,12 @@ class _DashboardState extends State<Dashboard> {
                         child: IconButton(
                           icon: const Icon(Icons.notifications_active),
                           color: Colors.white,
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => NotificationsPage()),
+                            );
+                          },
                         ),
                       ),
                     ],

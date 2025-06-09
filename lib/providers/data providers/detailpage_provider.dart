@@ -52,13 +52,17 @@ class DetailPageProvider with ChangeNotifier {
       for (final image in images) {
         final inputImage = InputImage.fromFile(image);
         final recognizedText = await textRecognizer.processImage(inputImage);
-        print("Text from one image:\n${recognizedText.text}");
-        combinedText += "${recognizedText.text}\n"; // Append with new line
+
+        combinedText += "${recognizedText.text}\n";
       }
+      print("Total images: ${images.length}");
+      print("Combined Text:\n$combinedText");
+      print(images);
 
       final organizedData = await _organizeData(combinedText);
-      print("Organized Data from all images: $organizedData");
+      print("Organized Data from combined images: $organizedData");
 
+      // Assign organized values to fields
       medicineName = organizedData['medicine_name'] ?? "";
       dosage = organizedData['dosage'] ?? "";
       formula = organizedData['formula'] ?? "";
@@ -72,30 +76,6 @@ class DetailPageProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
-  // Future<void> performTextRecognition(File image) async {
-  //   isLoading = true;
-  //   notifyListeners();
-  //   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-  //   try {
-  //     final inputImage = InputImage.fromFile(image);
-  //     final recognizedText = await textRecognizer.processImage(inputImage);
-  //     print(recognizedText.text);
-  //     final organizedData = await _organizeData(recognizedText.text);
-  //     print(organizedData);
-  //     medicineName = organizedData['medicine_name'] ?? "";
-  //     dosage = organizedData['dosage'] ?? "";
-  //     formula = organizedData['formula'] ?? "";
-  //     manufacturingDate = organizedData['manufacturing_date'] ?? "";
-  //     expiryDate = organizedData['expiry_date'] ?? "";
-  //     companyName = organizedData['company_name'] ?? "";
-  //   } catch (e) {
-  //     print('Error: $e');
-  //   } finally {
-  //     isLoading = false;
-  //     notifyListeners();
-  //   }
-  // }
 
   final String extractionPrompt = '''
 Extract and organize the following information into a clean, valid JSON format:
@@ -161,11 +141,7 @@ Dec, December
         ]
       }),
     );
-    print(response.statusCode);
-    print('hello');
-    print(response.body);
-    print('hello');
-    print('hello');
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final rawResponse = data['choices'][0]['message']['content'].trim();
@@ -236,43 +212,6 @@ Dec, December
     }
   }
 
-  // Future<void> checkMedicine({
-  //   required String userId,
-  //   required String medicineName,
-  //   required String companyName,
-  // }) async {
-  //   try {
-  //     final medicinesRef =
-  //         _firestore.collection('users').doc(userId).collection('medicines');
-  //     final querySnapshot = await medicinesRef
-  //         .where('medicine_name', isEqualTo: medicineName)
-  //         .get();
-
-  //     if (querySnapshot.docs.isNotEmpty) {
-  //       bool foundMatchingCompany = false;
-
-  //       for (var doc in querySnapshot.docs) {
-  //         final data = doc.data();
-  //         if (data['company_name'] == companyName) {
-  //           foundMatchingCompany = true;
-  //           break;
-  //         }
-  //       }
-
-  //       if (foundMatchingCompany) {
-  //         setMessage("This is a regular medicine.", Colors.green);
-  //       } else {
-  //         setMessage("Medicine already exists with a different company name.",
-  //             Colors.red);
-  //       }
-  //     } else {
-  //       setMessage("This is a new medicine.", Colors.green);
-  //     }
-  //   } catch (e) {
-  //     setMessage("Error checking medicine.", Colors.red);
-  //   }
-  // }
-
   // Updated method to handle default day parsing
   Future<void> addMedicine({
     required String userId,
@@ -289,7 +228,7 @@ Dec, December
           _firestore.collection('users').doc(userId).collection('medicines');
 
       // Add a new document with an auto-generated ID
-      await medicinesRef.add({
+      final medicineDoc = await medicinesRef.add({
         'medicine_name': medicineName,
         'company_name': companyName,
         'formula': formula,
@@ -299,7 +238,8 @@ Dec, December
         'remainder_for_3_months': true, // Flag for 3-month reminder
         'remainder_for_6_months': true, // Flag for 6-month reminder
       });
-
+      final medicineId = medicineDoc.id;
+      await medicineDoc.update({'medicine_id': medicineId});
       if (expiryDate.isNotEmpty &&
           expiryDate.toLowerCase() != "cant recognize") {
         try {
@@ -315,12 +255,12 @@ Dec, December
               expiryDateTime.subtract(const Duration(days: 180));
 
           if (reminderDate3Months.isAfter(DateTime.now())) {
-            await _saveNotificationToFirebase(
-                userId, medicineName, reminderDate3Months, 3);
+            await _saveRemindersToFirebase(
+                userId, medicineId, medicineName, reminderDate3Months, 3);
           }
           if (reminderDate6Months.isAfter(DateTime.now())) {
-            await _saveNotificationToFirebase(
-                userId, medicineName, reminderDate6Months, 6);
+            await _saveRemindersToFirebase(
+                userId, medicineId, medicineName, reminderDate6Months, 6);
           }
         } catch (e) {
           print("Invalid expiry date format: $e");
@@ -332,16 +272,17 @@ Dec, December
     }
   }
 
-  Future<void> _saveNotificationToFirebase(String userId, String medicineName,
-      DateTime reminderDate, int monthsBefore) async {
+  Future<void> _saveRemindersToFirebase(String userId, String medicineId,
+      String medicineName, DateTime reminderDate, int monthsBefore) async {
     try {
-      final notificationsRef = _firestore
+      final remindersRef = _firestore
           .collection('users')
           .doc(userId)
-          .collection('medicine_notifications');
+          .collection('medicine_reminders');
 
       // Save the reminder data (with a flag for the months before expiry)
-      await notificationsRef.add({
+      await remindersRef.add({
+        'medicine_id': medicineId,
         'medicine_name': medicineName,
         'reminder_date': reminderDate,
         'months_before': monthsBefore,

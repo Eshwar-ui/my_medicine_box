@@ -99,7 +99,9 @@ class _CameraPageState extends State<CameraPage> {
     // Save processed image to a temp file
     final processedBytes = Uint8List.fromList(img.encodeJpg(contrast));
     final tempDir = Directory.systemTemp;
-    final processedFile = await File('${tempDir.path}/processed.jpg')
+    final uniqueFileName =
+        'processed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final processedFile = await File('${tempDir.path}/$uniqueFileName')
         .writeAsBytes(processedBytes);
 
     return processedFile;
