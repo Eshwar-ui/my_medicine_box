@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image/image.dart';
 import 'package:my_medicine_box/presentation/components/app_assets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:my_medicine_box/providers/authentication/auth_provider.dart';
@@ -97,23 +98,35 @@ class _LoginPageState extends State<LoginPage> {
                   icon: Icon(
                     MdiIcons.google,
                     size: 24,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                          Theme.of(context).colorScheme.primary),
-                      elevation: const WidgetStatePropertyAll(10),
-                      foregroundColor: WidgetStatePropertyAll(Colors.white),
-                      textStyle: WidgetStatePropertyAll(
-                          AppTextStyles.H3(context)
-                              .copyWith(color: Colors.white)),
-                      shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)))),
+                  label: Text(
+                    "Sign in with Google",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    elevation: 8,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    // ignore: deprecated_member_use
+                    shadowColor: Colors.black.withOpacity(0.2), // Correct!
+                    textStyle: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
                   onPressed: () async {
                     await authProvider.signInWithGoogle(context);
                   },
-                  label: const Text(
-                    "sign in with google",
-                  ),
                 ),
               ),
               Spacer(),

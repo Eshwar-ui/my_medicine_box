@@ -232,12 +232,10 @@ class _DashboardState extends State<Dashboard> {
                           icon: const Icon(Icons.notifications_active),
                           color: Colors.white,
                           onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const NotificationsPage(),
-                                ));
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => NotificationsPage()),
+                            );
                           },
                         ),
                       ),

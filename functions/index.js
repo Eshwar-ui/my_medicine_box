@@ -69,61 +69,68 @@ const moment = require("moment");
 
 admin.initializeApp();
 
-// Function runs every day
-exports.checkMedicineReminders = functions.pubsub.schedule("every 24 hours").onRun(async () => {
-  const usersSnapshot = await admin.firestore().collection("users").get();
+exports.checkMedicineReminders = functions.pubsub
+  .schedule("every day 00:00")
+  .timeZone("Asia/Kolkata")
+  .onRun(async () => {
+    const usersSnapshot = await admin.firestore().collection("users").get();
 
-  for (const userDoc of usersSnapshot.docs) {
-    const userId = userDoc.id;
-    const userData = userDoc.data();
+    for (const userDoc of usersSnapshot.docs) {
+      const userId = userDoc.id;
+      const userData = userDoc.data();
 
-    const token = userData.fcmToken;
-    if (!token) continue; // Skip if user has no FCM token
+      const token = userData.fcmToken;
+      if (!token) continue;
 
-    const medsSnapshot = await userDoc.ref.collection("medicine_notifications").get();
+      const medsSnapshot = await userDoc.ref.collection("medicine_reminders").get();
 
-    for (const doc of medsSnapshot.docs) {
-      const data = doc.data();
+      for (const doc of medsSnapshot.docs) {
+        const data = doc.data();
 
-      // Check if reminder_date exists
-      if (!data.reminder_date) continue;
+        if (!data.reminder_date || data.notified) continue;
 
-      const reminderDate = moment(data.reminder_date.toDate()).format("YYYY-MM-DD");
-      const currentDate = moment().format("YYYY-MM-DD");
+        const reminderDate = moment(data.reminder_date.toDate()).format("YYYY-MM-DD");
+        const today = moment().format("YYYY-MM-DD");
 
-      if (reminderDate === currentDate) {
-        const medicineName = data.medicine_name || "a medicine";
+        if (reminderDate === today) {
+          const medicineName = data.medicine_name || "your medicine";
+          const monthsBefore = data.months_before || 0;
 
-        // Send push notification
-        await sendReminderNotification(token, medicineName);
+          const messageText = `Your medicine "${medicineName}" is set to expire in ${monthsBefore} month${monthsBefore > 1 ? "s" : ""}.`;
 
-        // Store in notifications subcollection
-        await userDoc.ref.collection("notifications").add({
-          title: "Medicine Reminder",
-          body: `Reminder: Take your medicine "${medicineName}" today.`,
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
-          read: false,
-        });
+          // 1. Send push notification
+          await sendReminderNotification(token, medicineName, monthsBefore);
 
-        console.log(`Notification sent and saved for ${userId}`);
+          // 2. Save in notifications subcollection
+          await userDoc.ref.collection("notifications").add({
+            title: "Medicine Expiry Reminder",
+            body: messageText,
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            read: false,
+          });
+
+          // 3. Mark as notified
+          await doc.ref.update({ notified: true });
+
+          console.log(`Notification sent and saved for ${userId}`);
+        }
       }
     }
-  }
-});
+  });
 
-async function sendReminderNotification(token, medicineName) {
+async function sendReminderNotification(token, medicineName, monthsBefore) {
   const message = {
     notification: {
-      title: "Medicine Reminder",
-      body: `Reminder: Take your medicine "${medicineName}" today.`,
+      title: "Medicine Expiry Reminder",
+      body: `Your medicine "${medicineName}" is set to expire in ${monthsBefore} month${monthsBefore > 1 ? "s" : ""}.`,
     },
     token: token,
   };
 
   try {
     await admin.messaging().send(message);
-    console.log("Notification sent successfully");
-  } catch (error) {
-    console.error("Error sending FCM notification:", error);
+    console.log("FCM sent successfully");
+  } catch (err) {
+    console.error("FCM send failed:", err);
   }
 }
