@@ -245,86 +245,54 @@ class _DashboardState extends State<Dashboard> {
                   const SizedBox(height: 24),
 
                   // Camera Preview Card
+                  // Camera Placeholder Card
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const CameraPage()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CameraPage()),
+                      );
                     },
                     child: Container(
-                        height: 190,
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(top: 20),
-                        decoration: BoxDecoration(
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x3F000000),
-                              blurRadius: 4,
-                              offset: Offset(0, 4),
+                      height: 190,
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(top: 20),
+                      decoration: BoxDecoration(
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x3F000000),
+                            blurRadius: 4,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(Dim.M),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.camera_alt_rounded,
+                              size: 48,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
-                          ],
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(Dim.M),
-                        ),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const CameraPage()));
-                          },
-                          child: Stack(children: [
-                            Positioned.fill(
-                              child: Consumer<CameraToggleProvider>(
-                                builder: (context, cameraProvider, child) {
-                                  if (cameraProvider.isCameraEnabled) {
-                                    if (_controller == null ||
-                                        !_controller!.value.isInitialized) {
-                                      // Initialize camera only when needed
-                                      _initCamera();
-                                    }
-                                  } else {
-                                    // Dispose controller if camera is disabled
-                                    _controller?.dispose();
-                                    _controller = null;
-                                  }
-
-                                  if (!cameraProvider.isCameraEnabled) {
-                                    return Center(
-                                      child: Icon(
-                                        Icons.camera,
-                                        size: 0,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                      ),
-                                    );
-                                  }
-
-                                  return _controller != null &&
-                                          _controller!.value.isInitialized
-                                      ? ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(Dim.M),
-                                          child: CameraPreview(_controller!),
-                                        )
-                                      : const Center(
-                                          child: CircularProgressIndicator());
-                                },
+                            const SizedBox(height: 12),
+                            Text(
+                              'Tap to scan your next medicine',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).colorScheme.onPrimary,
                               ),
                             ),
-                            Positioned(
-                              child: Center(
-                                  child: Icon(
-                                Icons.camera_alt_rounded,
-                                size: 48,
-                                color: Theme.of(context).colorScheme.onPrimary,
-                              )),
-                            ),
-                          ]),
-                        )),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
+
                   const SizedBox(height: 24),
                   Row(
                     children: [

@@ -27,6 +27,7 @@ class DetailPageProvider with ChangeNotifier {
   bool isLoading = true;
   String message = "";
   Color messageColor = Colors.black;
+  bool isInvalidImage = false;
 
   DetailPageProvider() {
     _initializeNotifications();
@@ -69,6 +70,34 @@ class DetailPageProvider with ChangeNotifier {
       manufacturingDate = organizedData['manufacturing_date'] ?? "";
       expiryDate = organizedData['expiry_date'] ?? "";
       companyName = organizedData['company_name'] ?? "";
+      print(medicineName);
+      print(medicineName.isEmpty);
+      print(medicineName.toLowerCase().contains("cant recognize"));
+      print(dosage);
+      print(formula);
+      print(manufacturingDate);
+      print(expiryDate);
+      print(companyName);
+      if ((medicineName.isEmpty ||
+              medicineName.toLowerCase().contains("cant recognize")) &&
+          (dosage.isEmpty || dosage.toLowerCase().contains("cant recognize")) &&
+          (formula.isEmpty ||
+              formula.toLowerCase().contains("cant recognize")) &&
+          (manufacturingDate.isEmpty ||
+              manufacturingDate.toLowerCase().contains("cant recognize")) &&
+          (expiryDate.isEmpty ||
+              expiryDate.toLowerCase().contains("not available")) &&
+          (companyName.isEmpty ||
+              companyName.toLowerCase().contains("not available"))) {
+        isInvalidImage = true;
+        setMessage("Invalid image. Please scan a valid medicine.", Colors.red);
+      } else {
+        isInvalidImage = false;
+        setMessage("Medicine recognized successfully!", Colors.green);
+      }
+
+      print(isInvalidImage);
+      print(message);
     } catch (e) {
       print('Error: $e');
     } finally {
@@ -105,6 +134,7 @@ Extraction Rules:
 - If multiple medicines or companies are found, pick the first occurrence.
 - If any required field is missing in the text, leave its value as "cant recognize ".
 - Output must be pure JSON only without any extra text or explanations.
+
 
 Month Mapping Reference:
 Jan, January
@@ -165,46 +195,49 @@ Dec, December
     required String userId,
     required String medicineName,
     required String companyName,
+    required bool isInvalidImage,
   }) async {
     try {
-      final medicinesRef =
-          _firestore.collection('users').doc(userId).collection('medicines');
+      if (!isInvalidImage) {
+        final medicinesRef =
+            _firestore.collection('users').doc(userId).collection('medicines');
 
-      final querySnapshot = await medicinesRef.get();
+        final querySnapshot = await medicinesRef.get();
 
-      final normalizedMedicine = medicineName.trim().toLowerCase();
-      final normalizedCompany = companyName.trim().toLowerCase();
+        final normalizedMedicine = medicineName.trim().toLowerCase();
+        final normalizedCompany = companyName.trim().toLowerCase();
 
-      bool medicineExists = false;
-      bool sameCompanyExists = false;
-      print("Checking: $normalizedMedicine | $normalizedCompany");
+        bool medicineExists = false;
+        bool sameCompanyExists = false;
+        print("Checking: $normalizedMedicine | $normalizedCompany");
 
-      for (var doc in querySnapshot.docs) {
-        final data = doc.data();
-        print(data);
-        final existingMedicine =
-            (data['medicine_name'] as String?)?.trim().toLowerCase() ?? '';
-        final existingCompany =
-            (data['company_name'] as String?)?.trim().toLowerCase() ?? '';
-        print(existingMedicine);
-        print(existingCompany);
-        if (existingMedicine == normalizedMedicine) {
-          medicineExists = true;
+        for (var doc in querySnapshot.docs) {
+          final data = doc.data();
+          print(data);
+          final existingMedicine =
+              (data['medicine_name'] as String?)?.trim().toLowerCase() ?? '';
+          final existingCompany =
+              (data['company_name'] as String?)?.trim().toLowerCase() ?? '';
+          print(existingMedicine);
+          print(existingCompany);
+          if (existingMedicine == normalizedMedicine) {
+            medicineExists = true;
 
-          if (existingCompany == normalizedCompany) {
-            sameCompanyExists = true;
-            break;
+            if (existingCompany == normalizedCompany) {
+              sameCompanyExists = true;
+              break;
+            }
           }
         }
-      }
 
-      if (medicineExists && sameCompanyExists) {
-        setMessage("This is a regular medicine.", Colors.green);
-      } else if (medicineExists && !sameCompanyExists) {
-        setMessage("Medicine already exists with a different company name.",
-            Colors.red);
-      } else {
-        setMessage("This is a new medicine.", Colors.green);
+        if (medicineExists && sameCompanyExists) {
+          setMessage("This is a regular medicine.", Colors.green);
+        } else if (medicineExists && !sameCompanyExists) {
+          setMessage("Medicine already exists with a different company name.",
+              Colors.red);
+        } else {
+          setMessage("This is a new medicine.", Colors.green);
+        }
       }
     } catch (e) {
       print("Error: $e");

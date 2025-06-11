@@ -207,42 +207,47 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    if (provider.expiryDate.isNotEmpty)
+                    if (!provider.isInvalidImage &&
+                        provider.expiryDate.isNotEmpty)
                       GestureDetector(
-                        onTap: () async {
-                          final userId = FirebaseAuth.instance.currentUser?.uid;
+                        onTap: provider.isInvalidImage
+                            ? null
+                            : () async {
+                                final userId =
+                                    FirebaseAuth.instance.currentUser?.uid;
 
-                          if (userId != null) {
-                            try {
-                              await provider.addMedicine(
-                                userId: userId,
-                                medicineName: provider.medicineName,
-                                companyName: provider.companyName,
-                                formula: provider.formula,
-                                manufacturingDate: provider.manufacturingDate,
-                                expiryDate: provider.expiryDate,
-                                remainder_for_3_months: _is3MonthSelected,
-                                remainder_for_6_months: _is6MonthSelected,
-                              );
+                                if (userId != null) {
+                                  try {
+                                    await provider.addMedicine(
+                                      userId: userId,
+                                      medicineName: provider.medicineName,
+                                      companyName: provider.companyName,
+                                      formula: provider.formula,
+                                      manufacturingDate:
+                                          provider.manufacturingDate,
+                                      expiryDate: provider.expiryDate,
+                                      remainder_for_3_months: _is3MonthSelected,
+                                      remainder_for_6_months: _is6MonthSelected,
+                                    );
 
-                              print("Medicine added successfully.");
-                            } catch (e) {
-                              provider.setMessage(
-                                  "Error adding medicine: ${e.toString()}",
-                                  Colors.red);
-                              print("Error adding medicine: $e");
-                            }
-                          } else {
-                            provider.setMessage(
-                                "User not authenticated.", Colors.red);
-                          }
+                                    print("Medicine added successfully.");
+                                  } catch (e) {
+                                    provider.setMessage(
+                                        "Error adding medicine: ${e.toString()}",
+                                        Colors.red);
+                                    print("Error adding medicine: $e");
+                                  }
+                                } else {
+                                  provider.setMessage(
+                                      "User not authenticated.", Colors.red);
+                                }
 
-                          await showAddedMedicineNotification(
-                              provider.medicineName);
+                                await showAddedMedicineNotification(
+                                    provider.medicineName);
 
-                          // ignore: use_build_context_synchronously
-                          Navigator.pop(context);
-                        },
+                                // ignore: use_build_context_synchronously
+                                Navigator.pop(context);
+                              },
                         child: Container(
                           width: double.infinity,
                           height: 60.h,
@@ -257,9 +262,11 @@ class _DetailPageState extends State<DetailPage> {
                               "+ADD TO COLLECTION",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
+                                color: provider.isInvalidImage
+                                    ? Colors.white70
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .inversePrimary,
                               ),
                             ),
                           ),
@@ -317,10 +324,10 @@ class _DetailPageState extends State<DetailPage> {
 
     try {
       await provider.checkMedicine(
-        userId: userId,
-        medicineName: provider.medicineName,
-        companyName: provider.companyName,
-      );
+          userId: userId,
+          medicineName: provider.medicineName,
+          companyName: provider.companyName,
+          isInvalidImage: provider.isInvalidImage);
     } catch (e) {
       print("Error during medicine check: $e");
       provider.setMessage("Error checking medicine.", Colors.red);

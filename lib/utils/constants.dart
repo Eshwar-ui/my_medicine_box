@@ -63,6 +63,9 @@ class AppTextStyles {
         fontSize: 12,
         fontWeight: FontWeight.w500,
       );
+  static TextStyle Body1(BuildContext context) {
+    return Theme.of(context).textTheme.bodyMedium!;
+  }
 }
 
 class Dim {
