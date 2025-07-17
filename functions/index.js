@@ -66,13 +66,13 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const moment = require("moment");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 
 admin.initializeApp();
 
-exports.checkMedicineReminders = functions.pubsub
-  .schedule("every day 00:00")
-  .timeZone("Asia/Kolkata")
-  .onRun(async () => {
+exports.checkMedicineReminders = onSchedule(
+  { schedule: "every day 00:00", timeZone: "Asia/Kolkata" },
+  async () => {
     const usersSnapshot = await admin.firestore().collection("users").get();
 
     for (const userDoc of usersSnapshot.docs) {

@@ -123,6 +123,7 @@ class MedicineDetailsCard extends StatelessWidget {
                     style: AppTextStyles.H4(context).copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(
@@ -161,16 +162,18 @@ class MedicineDetailsCard extends StatelessWidget {
         children: [
           Text(
             "$label: ",
-            style: AppTextStyles.BM(context).copyWith(
+            style: AppTextStyles.Body1(context).copyWith(
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: AppTextStyles.BM(context).copyWith(
+              style: AppTextStyles.Body1(context).copyWith(
                 color: Theme.of(context).colorScheme.inversePrimary,
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
           ),
         ],

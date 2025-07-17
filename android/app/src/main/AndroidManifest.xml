@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.CAMERA" />
@@ -8,10 +9,42 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+=======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<uses-permission android:name="android.permission.CAMERA"/>
+<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+<uses-feature android:name="android.hardware.camera" android:required="true" />
+>>>>>>> 06b02956e5ab58e4f8394f5e8245bfe3870730c1
     <application
         android:label="my_medicine_box"
         android:name="${applicationName}"
         android:enableOnBackInvokedCallback="true"
+<<<<<<< HEAD
+=======
+        
+        
+
+>>>>>>> 06b02956e5ab58e4f8394f5e8245bfe3870730c1
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
@@ -40,4 +73,8 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
-</manifest>
+</manifest> 
+
+
+
+
