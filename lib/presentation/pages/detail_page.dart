@@ -60,8 +60,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Future<void> showAddedMedicineNotification(String medicineName) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       'medicine_channel',
       'Medicine Notifications',
       importance: Importance.max,
@@ -69,14 +68,16 @@ class _DetailPageState extends State<DetailPage> {
       ticker: 'ticker',
     );
 
-    const notificationDetails = NotificationDetails(android: androidDetails);
+    const platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
 
     // 1. Show Local Notification
     await flutterLocalNotificationsPlugin.show(
       0,
       'Medicine Added',
       '$medicineName has been added to your collection.',
-      platformChannelSpecifics,
+      platformDetails,
     );
   }
 

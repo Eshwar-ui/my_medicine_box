@@ -28,7 +28,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  camera: ^0.11.1
+  flutter:
+    sdk: flutter
+  camera: ^0.10.5+2
+  camera_android: ^0.10.8+5
+  permission_handler: ^11.0.1
 
   # firebase deprndencies
   cloud_firestore: ^5.6.1
@@ -39,8 +43,6 @@ dependencies:
 
   # components widgets
   flip_card: ^0.7.0
-  flutter:
-    sdk: flutter
   flutter_dotenv: ^5.2.1
   flutter_excel: ^1.0.1
   flutter_local_notifications: ^19.0.0
@@ -59,7 +61,6 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296
   material_symbols_icons: ^4.2815.0
   path_provider: ^2.1.5
-  permission_handler: ^12.0.0+1
   provider: ^6.1.2
   shared_preferences: ^2.3.5
   timezone: ^0.10.0

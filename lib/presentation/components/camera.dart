@@ -6,6 +6,7 @@ import 'package:my_medicine_box/presentation/pages/detail_page.dart';
 import 'package:my_medicine_box/utils/constants.dart';
 import 'package:image/image.dart' as img;
 import 'dart:typed_data';
+import 'package:permission_handler/permission_handler.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key}) : super(key: key);
@@ -14,38 +15,88 @@ class CameraPage extends StatefulWidget {
   State<CameraPage> createState() => _CameraPageState();
 }
 
-class _CameraPageState extends State<CameraPage> {
+class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   bool _isCameraInitialized = false;
   bool _isFrontCamera = false;
+  bool _hasPermission = false;
 
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    WidgetsBinding.instance.addObserver(this);
+    _checkPermissionAndInitCamera();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cameraController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = _cameraController;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      _initializeCamera();
+    }
+  }
+
+  Future<void> _checkPermissionAndInitCamera() async {
+    final status = await Permission.camera.request();
+    setState(() {
+      _hasPermission = status.isGranted;
+    });
+
+    if (_hasPermission) {
+      await _initializeCamera();
+    }
   }
 
   Future<void> _initializeCamera() async {
+    if (!_hasPermission) return;
+
     try {
       _cameras = await availableCameras();
       if (_cameras != null && _cameras!.isNotEmpty) {
         _cameraController = CameraController(
-          _cameras![0], // back camera initially
-          ResolutionPreset.ultraHigh,
+          _cameras![0],
+          ResolutionPreset.high,
+          enableAudio: false,
+          imageFormatGroup: ImageFormatGroup.jpeg,
         );
+
         await _cameraController!.initialize();
+
         if (!mounted) return;
+
         setState(() {
           _isCameraInitialized = true;
         });
+
         await _showDisclaimerDialog();
       }
     } catch (e) {
-      // Handle initialization error
       print('Error initializing camera: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error initializing camera: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -204,13 +255,25 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   @override
-  void dispose() {
-    _cameraController?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (!_hasPermission) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Camera permission is required to use this feature.'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _checkPermissionAndInitCamera,
+                child: const Text('Grant Permission'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
